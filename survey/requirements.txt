@@ -1,0 +1,8 @@
+streamlit==1.44.1
+pandas
+numpy
+altair
+matplotlib
+adjustText
+scipy
+vl-convert-python>=1.0.1
