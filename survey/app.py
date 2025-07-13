@@ -28,6 +28,7 @@ from scipy.optimize import linprog
 import matplotlib.pyplot as plt 
 from itertools import combinations
 from adjustText import adjust_text
+import os
 
 ################################################################################
 #  Global constants                                                            #
@@ -86,6 +87,26 @@ power_map = {
 #   "Aire acondicionado":               2700,
 #   "Bombillas":                        7920,
 }
+
+#############################################################################
+# Password                                                                  #
+#############################################################################
+
+PASSWORD = st.secrets.get("APP_PASSWORD") or os.getenv("APP_PASSWORD")
+
+if "auth_ok" not in st.session_state:
+    st.session_state.auth_ok = False
+
+if not st.session_state.auth_ok:
+    st.title("🔒 Acceso restringido")
+    pwd = st.text_input("Introduce la contraseña:", type="password")
+    if st.button("Entrar"):
+        if pwd == PASSWORD:
+            st.session_state.auth_ok = True
+            st.experimental_rerun()
+        else:
+            st.error("❌ Contraseña incorrecta")
+    st.stop()
 
 ################################################################################
 #  Device “buckets”                                                            #
