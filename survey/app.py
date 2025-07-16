@@ -1166,17 +1166,71 @@ def thank_you_page() -> None:
     )
 # --------------------------------------------------------------
 
-def finish_current_respondent():
-    """
-    • Writes one JSON file per respondent to DATA_DIR  
-    • Updates the in-memory list `st.session_state.survey_data`  
-    • Checks whether the target sample size has been reached; if so,
-      flips the “finished” flag in survey_meta and jumps to the analytics page.
-    """
+#def finish_current_respondent():
+#    """
+#    • Writes one JSON file per respondent to DATA_DIR  
+#    • Updates the in-memory list `st.session_state.survey_data`  
+##    • Checks whether the target sample size has been reached; if so,
+#      flips the “finished” flag in survey_meta and jumps to the analytics page.
+#    """
+#
+#    rid = st.session_state.this_respondent_id.strip()
+#    
+#        # ---------- build record ------------------------------------------------
+#    record = {
+#        "id": rid,
+#        "Methods": {
+#            "SG": {
+#                "utility": normalise_answer(
+#                    "SG", st.session_state.responses_sg.get(rid, {})
+#                )
+#            },
+#            "PC": {
+#                "utility": normalise_answer(
+#                    "PC", st.session_state.responses_pc.get(rid, [])
+#                )
+#            }
+#        }
+#    }
+#
+## ---------- save to a respondent-specific file --------------------------
+#    out_path = DATA_DIR / RESP_PATTERN.format(rid=rid)
+#    out_path.write_text(json.dumps(record, indent=2))
+#
+#    # ── update in-session data ─────────────────────────────────────────────
+#    st.session_state.completed_ids.add(rid)
+#    st.session_state.survey_data.append(record)
+#
+#    # ── quota reached?  jump to optimisation-setup (page 98) ───────────────
+#    meta = st.session_state.survey_meta
+#    target_n = meta.get("target_n")              # may be None on first run
+#
+#    if (
+#        target_n is not None
+#        and len(st.session_state.completed_ids) >= target_n
+#        and not meta.get("finished", False)
+#    ):
+#        meta["finished"] = True                             # ✂️  no code below runs
+# #       save_meta(meta)
 
+#    # ── clean transient keys ───────────────────────────────────────────────
+#    for k in list(st.session_state.keys()):
+#        if k.endswith(("_sg", "_pc", "_es")) or k in {
+#            "page_index_sg", "page_index_pc", "wins_pc", "checked_pairs_pc",
+#        }:
+#            st.session_state.pop(k, None)
+#
+#    # ── organiser options (only shown while quota not yet met) ─────────────
+#    st.info("Respondent saved.")
+#
+#    st.session_state.this_respondent_id = None
+#    st.session_state.page_index = 120
+#    st.rerun()   
+
+def finish_current_respondent():
     rid = st.session_state.this_respondent_id.strip()
-    
-        # ---------- build record ------------------------------------------------
+
+    # --------------------------------- build & save ------------------------
     record = {
         "id": rid,
         "Methods": {
@@ -1189,43 +1243,41 @@ def finish_current_respondent():
                 "utility": normalise_answer(
                     "PC", st.session_state.responses_pc.get(rid, [])
                 )
-            }
-        }
+            },
+        },
     }
 
-    # ---------- save to a respondent-specific file --------------------------
-    out_path = DATA_DIR / RESP_PATTERN.format(rid=rid)
-    out_path.write_text(json.dumps(record, indent=2))
+    (DATA_DIR / RESP_PATTERN.format(rid=rid)).write_text(
+        json.dumps(record, indent=2)
+    )
 
-    # ── update in-session data ─────────────────────────────────────────────
+    # --------------------------------- update RAM --------------------------
     st.session_state.completed_ids.add(rid)
     st.session_state.survey_data.append(record)
 
-    # ── quota reached?  jump to optimisation-setup (page 98) ───────────────
+    # ❷ marcar “finished” si ya se llegó a la cuota
     meta = st.session_state.survey_meta
-    target_n = meta.get("target_n")              # may be None on first run
-
-    if (
-        target_n is not None
-        and len(st.session_state.completed_ids) >= target_n
-        and not meta.get("finished", False)
-    ):
-        meta["finished"] = True                             # ✂️  no code below runs
+    tgt  = meta.get("target_n")
+    if tgt and len(st.session_state.completed_ids) >= tgt:
+        meta["finished"] = True
         save_meta(meta)
 
-    # ── clean transient keys ───────────────────────────────────────────────
+    # --------------------------------- dejar todo limpio -------------------
+    # (ahora sí) borrar respuestas y páginas internas
     for k in list(st.session_state.keys()):
         if k.endswith(("_sg", "_pc", "_es")) or k in {
-            "page_index_sg", "page_index_pc", "wins_pc", "checked_pairs_pc",
+            "page_index_sg", "page_index_pc",
+            "wins_pc", "checked_pairs_pc",
+            "responses_sg", "responses_pc",
         }:
             st.session_state.pop(k, None)
 
-    # ── organiser options (only shown while quota not yet met) ─────────────
+    # nuevo entrevistado ⇒ volvemos a la intro
     st.info("Respondent saved.")
-
+    
     st.session_state.this_respondent_id = None
-    st.session_state.page_index = 120
-    st.rerun()   
+    st.session_state.page_index = 120          # pantalla “gracias”
+    st.rerun()
         
 ################################################################################
 #  Summary page                                                                #
@@ -1847,27 +1899,29 @@ def analytics_page():
 ################################################################################
 #  Main Menu                                                                   #
 ################################################################################
-    
+
 def main():
+    meta = st.session_state.survey_meta       # <- más cómodo
+
+    # si no hay equipos definidos ⇒ ir a página 1
+    if "facility_devices" not in meta:
+        st.session_state.page_index = 1
+
     page = st.session_state.page_index
-    if page == 0: 
+
+    if page == 0:
         survey_setup_page()
-    elif page == 1: 
+    elif page == 1:
         device_availability_page()
-#    elif page == 2: 
-#        configure_load_contents()       
-    elif page == 2: 
+    elif page == 2:
         respondent_intro_page()
-    elif page == 5: 
+    elif page == 5:
         standard_gamble_method()
-    elif page == 6: 
+    elif page == 6:
         pairwise_method()
-    elif page == 98: 
-        optimisation_setup_page()       
-    elif page == 120:         
+    elif page == 98:
+        optimisation_setup_page()
+    elif page == 120:
         thank_you_page()
     else:
         analytics_page()
-
-if __name__ == "__main__":
-    main()
