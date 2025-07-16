@@ -102,7 +102,7 @@ if not st.session_state.auth_ok:
     if st.button("Entrar"):
         if pwd == PASSWORD:
             st.session_state.auth_ok = True
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("❌ Contraseña incorrecta")
     st.stop()
@@ -1292,7 +1292,7 @@ def is_admin():
     pwd = st.text_input("Contraseña de administrador", type="password")
     if pwd and pwd == st.secrets["admin"]["password"]:
         st.session_state["_is_admin"] = True
-        st.experimental_rerun()
+        st.rerun()
     return False
     
 #-------------------------
