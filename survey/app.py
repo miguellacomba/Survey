@@ -543,8 +543,19 @@ def configure_load_contents():
 #  Respondent‑level pages                                                      #
 ################################################################################
 
-def respondent_intro_page():
+def next_auto_id():
+    """
+    Devuelve el próximo ID disponible con prefijo 'SP' (SP1, SP2, …).
+    Busca en los ficheros de respuestas ya guardados y en la sesión actual.
+    """
+    taken = {rec["id"] for rec in st.session_state.survey_data}              # en disco
+    taken.update(st.session_state.ids)                                       # en memoria
+    i = 1
+    while f"SP{i}" in taken:
+        i += 1
+    return f"SP{i}"
 
+def respondent_intro_page():
 
 #    st.write("Before introducing your ID and proceeding to the method, it is important that you read and understand the following information regarding the management of your data.")
 #    st.write("Place and time:                                             - To be introduced")
