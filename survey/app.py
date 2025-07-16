@@ -1315,9 +1315,11 @@ def run_optimisation(util_dict, power_map, P):
 #Password helper 
 
 def is_admin():
-    """Devuelve True si el usuario ha introducido la contraseña correcta."""
     pwd_entered = st.session_state.get("admin_pwd", "")
-    stored_pwd  = st.secrets.get("admin", {}).get("password", "")
+    stored_pwd  = (
+        st.secrets.get("admin", {}).get("password")     # primero busca en [admin]
+        or st.secrets.get("password", "")               # luego en raíz
+    )
     return pwd_entered and pwd_entered == stored_pwd
     
 #-------------------------
