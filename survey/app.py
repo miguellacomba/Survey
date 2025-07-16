@@ -603,7 +603,11 @@ def respondent_intro_page():
     )
     st.markdown("---")
 
-    st.write("Hola, mi nombre es Miguel Lacomba Albert, y soy estudiante en la ETH de Zürich. Actualmente estoy terminando mi Trabajo de Fin de Máster que trata la **priorización de cargas criticas en Centros de Salud** cuando estos se encuentran en **situaciones de escasez de energía (apagones, acceso a la red inestable, etc)**. [Consideramos unna carga crítica, en el ámbito de los centros de salud, a aquella que si o si debe tener un acceso a la energía fiable y continuado, sin interrupciones].")
+    st.write("Hola, mi nombre es Miguel Lacomba Albert, y soy estudiante en la ETH de Zürich.")
+    
+    st.write("Actualmente estoy terminando mi Trabajo de Fin de Máster que trata la **priorización de cargas criticas en Centros de Salud**, cuando estos se encuentran en **situaciones de escasez de energía (apagones, acceso a la red inestable, etc)**.")
+
+    st.write("[Consideramos una carga crítica, en el ámbito de los centros de salud, a aquella que si o si debe tener un acceso a la energía fiable y continuado, sin interrupciones].")
 
     st.write("Este Proyecto busca entonces ayudar a los centros de salud de regiones donde el acceso a la energía eléctrica no está asegurado. En este caso en concreto, está diseñado para un centro de salud en un poblado indígena cerca de Barranquilla, Colombia.")
 
@@ -623,7 +627,7 @@ def respondent_intro_page():
     st.write("- **¿Cual es su Rol?** Su rol será simplemente el de contestar una encuesta que involucra dos métodos para evaluar cómo usted prioriza los aparatos médicos durante apagones, cortes de luz, etc.")
 
     st.markdown(
-        "Cuando estés listo/a, pulsa el botón para comenzar."
+        "Cuando esté listo/a, pulsa el botón para comenzar."
     )
 
     if st.button("Comenzar encuesta"):
@@ -643,19 +647,19 @@ def standard_gamble_method():
 
         st.markdown(
             """
-            En esta encuesta realizarás un **_Standard Gamble (SG)_**
-            para indicarnos qué dispositivos deberían recibir electricidad
+            En esta encuesta realizará un **_Standard Gamble (SG)_**
+            para indicar qué dispositivos deberían recibir electricidad
             cuando esta escasea.
 
             ### 🌩️ Contexto
             * A veces la demanda **supera** lo que el centro puede generar.
-            * Debes decidir cómo asignar esa energía limitada.
+            * Debe decidir cómo asignar esa energía limitada.
 
             ### 🎲 Sus tres opciones en cada paso son las siguientes:
             1. **<span style='color:#3CA4FF;'>Opción A – Energía parcial</span>**  
-               Una pequeña cantidad de energía *garantizada*, pero sabemos que dejará de funcionar en cuanto se consuma.
+               Una pequeña cantidad de energía *garantizada*, pero sabemos que **dejará de funcionar** en cuanto se consuma.
             2. **<span style='color:#FF5733;'>Opción B – Lotería</span>**  
-               En este caso, usted decide **Apostar**: Escoger un *p* % de probabilidad de que el dispositivo va a funcionar sin problemas y sin cortes,
+               En este caso, usted decide **Apostar**: Escoger un *p* % de probabilidad de que el dispositivo va a **funcionar sin problemas** y sin cortes,
                y por tanto, otorgar un *(1-p)* % de probabilidad a que **no va a funcionar en ningún momento**.
             3. **<span style='color:#AAAAAA;'>Indiferente</span>**  
                Usted es **indiferente**. Es decir, la probabilidad **P**% le parece un valor apropiado de **importancia** para este dispositivo. 
@@ -740,22 +744,24 @@ def standard_gamble_method():
 
         # ── manejo de clic ─────────────────────────────────────
         if choice_clicked is None:
-            return  # nada pulsado
-        if not store_answer:         # estamos en la demo → salir
-            st.rerun()
+            return                              # nada pulsado
 
-        # preguntas reales: actualizamos min/max/guess o almacenamos
+        # ── clicks en A / B → ajustan rangos incluso en la demo
         if choice_clicked == "Partial":
             st.session_state[k_min] = p_guess
         elif choice_clicked == "Lottery":
             st.session_state[k_max] = p_guess
-        elif choice_clicked == "Indifferent":
+        elif choice_clicked == "Indifferent" and store_answer:
+            # solo guardamos respuesta real, nunca en el ejemplo
+            rid = st.session_state.this_respondent_id
             st.session_state.responses_sg.setdefault(rid, {})[device_name] = p_guess * 100
-            st.session_state.page_index_sg += 1
-            st.rerun()
+            st.session_state.page_index_sg += 1   # siguiente dispositivo
+            st.experimental_rerun()
             return
+
+        # recalcular nuevo punto medio y recargar la página
         st.session_state[k_guess] = (st.session_state[k_min] + st.session_state[k_max]) / 2
-        st.rerun()
+        st.experimental_rerun()
         
 # ----------------------------------- Device Page (one per page) ---------------------------------
     
