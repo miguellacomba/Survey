@@ -3,14 +3,14 @@
 
 #A page index drives the navigation flow:
 
-#    0 → survey setup (number of respondents)
-#    1 → device availability checklist
-#    2 → load‑type assignment for every device
-#    3 → (reserved – method selection)
-#    4 → respondent consent + ID
-#    5 → Standard Gamble questionnaire
-#    6 → Pairwise Comparison questionnaire
-#   99 → final summary of all respondents
+#    0 → survey setup
+#    1 → device availability
+#    2 → respondent intro
+#    6 → Pairwise Comparison
+#    5 → Standard Gamble
+#  120 → Thank-you
+#   98 → optimisation-setup (solo cuando meta["finished"])
+#   99 → analytics
 
 #The code is organised in self‑contained view functions, each responsible for 
 #rendering one logical page and mutating the session state so that the main
@@ -1212,8 +1212,8 @@ def finish_current_respondent():
     ):
         meta["finished"] = True
         save_meta(meta)
-        st.session_state.page_index = 98         # optimisation setup
-        st.rerun()                  # stop here & redraw
+#        st.session_state.page_index = 98         # optimisation setup
+#        st.rerun()                  # stop here & redraw
         return                                   # ✂️  no code below runs
         
     # ── clean transient keys ───────────────────────────────────────────────
@@ -1324,6 +1324,16 @@ def is_admin():
 def analytics_page():
     st.title("📊 Survey analytics")
 
+    if not is_admin():
+        st.subheader("🔐 Acceso a analytics")
+        st.text_input(
+            "Introduce la contraseña de analytics:",
+            type="password",
+            key="admin_pwd",
+            on_change=st.experimental_rerun   # recarga al teclear
+        )
+        st.stop()
+        
     if not is_admin():
         st.stop()  
     else:
