@@ -604,7 +604,7 @@ def respondent_intro_page():
 
     st.write("**¿Por qué necesitamos profesionales de la salud de España?** Si bien es cierto que en España o en cualquier país desarrollado, esto no es tan necesario, la opinión de los profesionales españoles (occidentales en nuestro caso), nos sirve para comprobar la consistencia y fiabilidad entre los métodos que estamos estudiando.")
 
-    st.write("Entonces, a modo de resumen : 
+    st.write("Entonces, a modo de resumen :" 
     st.write("* **¿Quién puede participar?** Cualquier profesional de la salud.")
     st.write("- **¿Tiempo necesario?** Alrededor de **15 minutos**")
     st.write("- **¿Es anónimo?** Si, es **100% anónimo**")
