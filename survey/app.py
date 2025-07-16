@@ -436,7 +436,7 @@ def survey_setup_page():
             st.rerun()
     else:
         # Si los dispositivos ya están definidos, saltamos a la intro del encuestado
-        next_page = 4 if "facility_devices" in meta else 1
+        next_page = 2 if "facility_devices" in meta else 1
         if st.button("Seguir recopilando datos"):
             st.session_state.page_index = next_page
             st.rerun()
