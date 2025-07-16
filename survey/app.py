@@ -1856,8 +1856,10 @@ def main():
     if   page == 0:   survey_setup_page()
     elif page == 1:   device_availability_page()
     elif page == 2:   respondent_intro_page()
-    elif page == 5:   standard_gamble_method()
-    elif page == 6:   pairwise_method()
+    elif page == 6:   standard_gamble_method()
+    elif page == 5:   pairwise_method()
     elif page == 98:  optimisation_setup_page()
     elif page == 120: thank_you_page()
     else:             analytics_page()        # incluye el caso page == 99
+
+main()
