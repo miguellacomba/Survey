@@ -87,26 +87,6 @@ power_map = {
 #   "Bombillas":                        7920,
 }
 
-#############################################################################
-# Password                                                                  #
-#############################################################################
-
-PASSWORD = st.secrets.get("APP_PASSWORD") or os.getenv("APP_PASSWORD")
-
-if "auth_ok" not in st.session_state:
-    st.session_state.auth_ok = False
-
-if not st.session_state.auth_ok:
-    st.title("🔒 Acceso restringido")
-    pwd = st.text_input("Introduce la contraseña:", type="password")
-    if st.button("Entrar"):
-        if pwd == PASSWORD:
-            st.session_state.auth_ok = True
-            st.rerun()
-        else:
-            st.error("❌ Contraseña incorrecta")
-    st.stop()
-
 ################################################################################
 #  Device “buckets”                                                            #
 ################################################################################
@@ -297,6 +277,32 @@ if "survey_meta" not in st.session_state:
 
 meta = st.session_state.survey_meta
 
+##############################################################################
+#  Enrutado automático al arrancar                                           #
+##############################################################################
+def select_initial_page():
+    """
+    Define a qué página debe ir la sesión nada más autenticarse,
+    dependiendo de si la encuesta está en curso o finalizada.
+    """
+    # Solo actuamos si la sesión acaba de empezar (page_index == 0)
+    if st.session_state.page_index != 0:
+        return
+
+    if meta.get("target_n") is None:
+        # Primera vez: aún no se ha configurado la encuesta ⇒ página 0 (setup)
+        st.session_state.page_index = 0
+    elif meta.get("finished", False):
+        # Muestra finalizados ⇒ ir a Analytics (page 99)
+        st.session_state.page_index = 99
+    else:
+        # Encuesta en curso ⇒ saltar directamente a la intro del encuestado
+        st.session_state.page_index = 2
+
+select_initial_page()        # <-- LLÁMALO una vez tras definirlo
+
+# ---------------------------------------------------------------------
+
 # max_power
 if meta.get("max_power") is not None:
     st.session_state.max_power = meta["max_power"]
@@ -320,6 +326,27 @@ st.write(f"🔍 Loaded respondents on disk: {st.session_state.completed_ids}")
     
 if "completed_ids" not in st.session_state:
     st.session_state.completed_ids = { rec["id"] for rec in st.session_state.survey_data }
+
+#############################################################################
+# Password                                                                  #
+#############################################################################
+
+PASSWORD = st.secrets.get("APP_PASSWORD") or os.getenv("APP_PASSWORD")
+
+if "auth_ok" not in st.session_state:
+    st.session_state.auth_ok = False
+
+if not st.session_state.auth_ok:
+    st.title("🔒 Acceso restringido")
+    pwd = st.text_input("Introduce la contraseña:", type="password")
+    if st.button("Entrar"):
+        if pwd == PASSWORD:
+            st.session_state.auth_ok = True
+            st.rerun()
+        else:
+            st.error("❌ Contraseña incorrecta")
+    st.stop()
+
 
 ################################################################################
 #  Helper utilities                                                            #
@@ -1146,7 +1173,6 @@ def pairwise_method():                                     #We start the method
 ################################################################################
 
 # --------------------------------Página “gracias” --------------------------------
-THANK_YOU_PAGE = 120 
 
 def thank_you_page() -> None:
     """Mensaje final para el encuestado."""
@@ -1221,7 +1247,7 @@ def finish_current_respondent():
     st.info("Respondent saved.")
 
     st.session_state.this_respondent_id = None
-    st.session_state.page_index = THANK_YOU_PAGE
+    st.session_state.page_index = 120
     st.rerun()   
         
 ################################################################################
@@ -1861,7 +1887,7 @@ def main():
         pairwise_method()
     elif page == 98: 
         optimisation_setup_page()       
-    elif page == THANK_YOU_PAGE:         
+    elif page == 120:         
         thank_you_page()
     else:
         analytics_page()
