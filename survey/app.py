@@ -1851,15 +1851,44 @@ def analytics_page():
 #  Main Menu                                                                   #
 ################################################################################
 
+# ───────────────────────────  Main dispatcher  ────────────────────────────
 def main():
-    page = st.session_state.page_index
+    """
+    Flujo deseado (primera vez que se abre la app):
+
+        0  → fijar tamaño muestral (target_n)
+        1  → elegir dispositivos disponibles
+        2  → pantalla de bienvenida del encuestado
+        6  → PC
+        5  → SG
+      120  → “gracias”
+    
+    Cuando **target_n** ya exista:
+        • si NO hay lista de dispositivos definida ⇒ ir a 1
+        • si SÍ la hay                            ⇒ ir a 2
+    """
+
+    meta  = st.session_state.survey_meta
+    page  = st.session_state.page_index        # valor actual
+
+    # ── redirecciones automáticas ──────────────────────────────────────────
+    if page == 0 and "target_n" in meta:                       # tamaño muestral OK
+        if not meta.get("facility_devices"):                   # aún sin dispositivos
+            st.session_state.page_index = 1
+            page = 1
+        else:                                                  # todo configurado
+            st.session_state.page_index = 2
+            page = 2
+
+    # ── enrutado explícito ─────────────────────────────────────────────────
     if   page == 0:   survey_setup_page()
     elif page == 1:   device_availability_page()
     elif page == 2:   respondent_intro_page()
-    elif page == 6:   standard_gamble_method()
-    elif page == 5:   pairwise_method()
+    elif page == 5:   standard_gamble_method()
+    elif page == 6:   pairwise_method()
     elif page == 98:  optimisation_setup_page()
     elif page == 120: thank_you_page()
     else:             analytics_page()        # incluye el caso page == 99
 
-main()
+if __name__ == "__main__":
+    main()
