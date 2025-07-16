@@ -1338,7 +1338,7 @@ def analytics_page():
             st.session_state.admin_pwd = pwd_try
 
             if is_admin():               # correcto → recargar página
-                st.experimental_rerun()
+                st.rerun()
             else:                        # incorrecto → mensaje de error
                 st.error("❌ Contraseña incorrecta")
 
