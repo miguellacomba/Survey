@@ -325,33 +325,6 @@ if not st.session_state.auth_ok:
             st.error("❌ Contraseña incorrecta")
     st.stop()
 
-#############################################################################
-# UI                                                                        #
-#############################################################################
-
-def select_initial_page():
-    """
-    Define a qué página debe ir la sesión nada más autenticarse,
-    dependiendo de si la encuesta está en curso o finalizada.
-    """
-    # Solo actuamos si la sesión acaba de empezar (page_index == 0)
-    if st.session_state.page_index != 0:
-        return
-
-    if meta.get("target_n") is None:
-        # Primera vez: aún no se ha configurado la encuesta ⇒ página 0 (setup)
-        st.session_state.page_index = 0
-    elif meta.get("finished", False):
-        # Muestra finalizados ⇒ ir a Analytics (page 99)
-        st.session_state.page_index = 98
-    else:
-        # Encuesta en curso ⇒ saltar directamente a la intro del encuestado
-        st.session_state.page_index = 2
-
-select_initial_page()        # <-- LLÁMALO una vez tras definirlo
-
-# ---------------------------------------------------------------------
-
 ################################################################################
 #  Helper utilities                                                            #
 ################################################################################
