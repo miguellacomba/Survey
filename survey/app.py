@@ -1330,7 +1330,7 @@ def analytics_page():
             "Introduce la contraseña de analytics:",
             type="password",
             key="admin_pwd",
-            on_change=st.experimental_rerun   # recarga al teclear
+            on_change=st.rerun   # recarga al teclear
         )
         st.stop()
         
