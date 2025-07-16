@@ -28,7 +28,6 @@ from scipy.optimize import linprog
 import matplotlib.pyplot as plt 
 from itertools import combinations
 from adjustText import adjust_text
-import os
 
 ################################################################################
 #  Global constants                                                            #
@@ -571,23 +570,54 @@ def respondent_intro_page():
 
 #    st.write("If you understand and agree with the mentioned above, please introduce the ID you will want to use and sign the consent form you were given in paper.")
     
-    st.title("Datos del participante")
+    """
+    Pantalla de bienvenida del participante.
+    Muestra su identificador asignado automáticamente y un botón para comenzar.
+    NO pide nada al usuario.
+    """
+    # ── si todavía no se ha generado un ID para esta sesión ─────────────────
+    if st.session_state.this_respondent_id is None:
+        new_id = next_auto_id()
+        st.session_state.this_respondent_id = new_id
+        st.session_state.ids.append(new_id)          # guardamos en sesión
 
-    resp_id = st.text_input("Introduce tu identificador (debe ser único):")
-    ya_usado = resp_id.strip() and (
-        resp_id in st.session_state.completed_ids or resp_id in st.session_state.ids
+    rid = st.session_state.this_respondent_id
+
+    # ── UI ──────────────────────────────────────────────────────────────────
+    st.title("Bienvenido/a a la encuesta")
+    
+    st.markdown(
+        f"Tu identificador de participante es **{rid}**  \n"
+        "Por favor, indícalo al investigador si se te solicita."
     )
-    if ya_usado:
-        st.warning("Ese ID ya existe. Por favor, elige otro.")
-        return
+    st.markdown("---")
+
+    st.write("Hola, mi nombre es Miguel Lacomba Albert, y soy estudiante en la ETH de Zürich. Actualmente estoy terminando mi Trabajo de Fin de Máster que trata la **priorización de cargas criticas en Centros de Salud** cuando estos se encuentran en **situaciones de escasez de energía (apagones, acceso a la red inestable, etc)**. [Consideramos unna carga crítica, en el ámbito de los centros de salud, a aquella que si o si debe tener un acceso a la energía fiable y continuado, sin interrupciones].")
+
+    st.write("Este Proyecto busca entonces ayudar a los centros de salud de regiones donde el acceso a la energía eléctrica no está asegurado. En este caso en concreto, está diseñado para un centro de salud en un poblado indígena cerca de Barranquilla, Colombia.")
+
+    st.write("**¿Cómo?** Se ha diseñado una herramienta para ayudar al sistema a distribuir la energía hacia los aparatos considerados como más importantes en situaciones donde la energía escasea.")
+
+    st.write("**¿No se ha hecho antes?** La respuesta es que sí, sí que se han estudios previos para establecer cuales son las cargas críticas en centros de salud, PERO, nunca considerando la opinión de doctores, enfermeras, y cualquier otro trabajador de un centro de salud con conocimientos médicos; sino que siempre ha sido considerando la opinión de los pacientes para ello. ")
+
+    st.write("**¿Por qué necesitamos profesionales de la salud de España?** Si bien es cierto que en España o en cualquier país desarrollado, esto no es tan necesario, la opinión de los profesionales españoles (occidentales en nuestro caso), nos sirve para comprobar la consistencia y fiabilidad entre los métodos que estamos estudiando.")
+
+    st.write("**¿Por qué necesitamos profesionales de la salud de España?** Si bien es cierto que en España o en cualquier país desarrollado, esto no es tan necesario, la opinión de los profesionales españoles (occidentales en nuestro caso), nos sirve para comprobar la consistencia y fiabilidad entre los métodos que estamos estudiando.")
+
+    st.write("Entonces, a modo de resumen : 
+    st.write("* **¿Quién puede participar?** Cualquier profesional de la salud.")
+    st.write("- **¿Tiempo necesario?** Alrededor de **15 minutos**")
+    st.write("- **¿Es anónimo?** Si, es **100% anónimo**")
+    st.write("- **¿Hay compensación económica?** **No**, no hay compensación económica.")
+    st.write("- **¿Cual es su Rol?** Su rol será simplemente el de contestar una encuesta que involucra dos métodos para evaluar cómo usted prioriza los aparatos médicos durante apagones, cortes de luz, etc.")
+
+    st.markdown(
+        "Cuando estés listo/a, pulsa el botón para comenzar."
+    )
 
     if st.button("Comenzar encuesta"):
-        if not resp_id.strip():
-            st.warning("El ID no puede estar vacío.")
-            return
-        st.session_state.this_respondent_id = resp_id.strip()
-        st.session_state.ids.append(resp_id.strip())
-        st.session_state.page_index = 5     # Ir a SG
+        # empezamos por PC (page_index = 6 según nuestro nuevo flujo)
+        st.session_state.page_index    = 6
         st.rerun()
 
 ###################################### Standard Gamble ##############################################
@@ -610,24 +640,112 @@ def standard_gamble_method():
             * A veces la demanda **supera** lo que el centro puede generar.
             * Debes decidir cómo asignar esa energía limitada.
 
-            ### 🎲 Tus tres opciones en cada paso
+            ### 🎲 Sus tres opciones en cada paso son las siguientes:
             1. **<span style='color:#3CA4FF;'>Opción A – Energía parcial</span>**  
-               Una pequeña cantidad de energía *garantizada* te basta.
+               Una pequeña cantidad de energía *garantizada*, pero sabemos que dejará de funcionar en cuanto se consuma.
             2. **<span style='color:#FF5733;'>Opción B – Lotería</span>**  
-               **Apuestas**: probabilidad *p* % de energía total (el dispositivo funcionará sin problemas),
-               *(1-p)* % de no recibir nada de energía, el dispositivo no funcionará.
+               En este caso, usted decide **Apostar**: Escoger un *p* % de probabilidad de que el dispositivo va a funcionar sin problemas y sin cortes,
+               y por tanto, otorgar un *(1-p)* % de probabilidad a que **no va a funcionar en ningún momento**.
             3. **<span style='color:#AAAAAA;'>Indiferente</span>**  
-               Aceptarías *cualquiera* de las dos opciones con esas probabilidades.
-            """,
+               Usted es **indiferente**. Es decir, la probabilidad **P**% le parece un valor apropiado de **importancia** para este dispositivo. 
+
+            ### ¿Qué tiene que hacer entonces usted? 
+            * Primero, ver de qué dispositivo se trata.
+            * Segundo, pensar qué tan importante es para usted. 
+            * Tercero, **si** cree que la probabilidad inicial asignada (50% de que funcionará sin problemas- 50% de que no funcionará en ningún caso) **representa lo valioso que es para usted** este aparato, puede clicar en indiferente y avanzar al siguiente aparato. Si, por el contrario, considera que es más importante para usted que funcione el aparato en cuestión, debe seleccionar la opción A (para incrementar la probabilidad de que debe funcionar en cualquier caso) tantas veces como crea necesario hasta obtener la probabilidad **P**% deseada. En el caso de que crea que es **menos** importante en su opinión que la probabilidad inicial (es decir, para usted es un aparato más prescindible que otros), debe seleccionar tantas veces como considere la Opción B, hasta que la probabilidad represente la importancia que le asigna usted a este aparato. 
+            * Cuarto, cuando la **probabilidad P% represente la importancia que usted le asigna al aparato, debe clicar en Indiferente para avanzar al siguiente aparato.**.
+
+            A continuación veremos una pantalla de Ejemplo, antes de avanzar al primer aparato.
+            
+            """, 
             unsafe_allow_html=True,
         )
 
-        st.markdown("**Cuando estés listo/a, haz clic en el botón para empezar.**")
+        st.markdown("**Cuando esté listo/a, haz clic en el botón para empezar.**")
 
-        if st.button("Comenzar SG"):
-            st.session_state.page_index_sg = 1
+        if st.button("Ver ejemplo"):
+            st.session_state.page_index_sg = -1   # ← demo page
+            st.rerun()
+            
+#        if st.button("Comenzar SG"):
+#            st.session_state.page_index_sg = 1
+#            st.rerun()
+
+# ------------------------------------------ Example -------------------------------------------
+
+    def sg_example_page():
+        """Pantalla interactiva de ejemplo (no se registra la respuesta)."""
+        demo_dev = "Dispositivo de ejemplo"
+        st.title("Ejemplo de pregunta")
+        st.markdown(
+            f"Imagina que el **{demo_dev}** puede recibir energía de forma poco fiable."
+        )
+        # Reutilizamos la misma UI que en las preguntas reales:
+        dummy_res = sg_interactive_core(demo_dev, store_answer=False)
+        # Botón para continuar
+        if st.button("¡Entendido, empecemos!"):
+            st.session_state.page_index_sg = 1    # primer dispositivo real
             st.rerun()
 
+    def sg_interactive_core(device_name: str, store_answer: bool) -> None:
+        """Construye la UI SG; si *store_answer* es False no guarda nada."""
+        rid = st.session_state.this_respondent_id
+        # inicializamos los pivotes binarios locales (no pasa nada si se recrean)
+        k_min, k_max, k_guess = (f"{device_name}_{s}" for s in ("p_min", "p_max", "p_guess"))
+        for k, v in [(k_min, 0.0), (k_max, 1.0), (k_guess, 0.5)]:
+            st.session_state.setdefault(k, v)
+
+        p_min   = st.session_state[k_min]
+        p_max   = st.session_state[k_max]
+        p_guess = st.session_state[k_guess]
+
+        colA, colB, colC = st.columns([1.7, 1.7, 1.6], gap="small")
+        st.markdown(
+            """
+            <style>
+            div.bttn > button{width:100%;font-size:1.1rem;padding:1rem 0;
+                              border-radius:10px;font-weight:600;}
+            div.bttn.optA>button{background:#4CAF50;color:#fff;}
+            div.bttn.optB>button{background:#2196F3;color:#fff;}
+            div.bttn.optC>button{background:#9E9E9E;color:#fff;}
+            </style>""",
+            unsafe_allow_html=True,
+        )
+
+        choice_clicked = None
+        with colA:
+            st.markdown("### <span style='color:#3CA4FF;'>Opción A</span>", unsafe_allow_html=True)
+            if st.container().button("Potencia parcial", key=f"A_{device_name}"):
+                choice_clicked = "Partial"
+        with colB:
+            st.markdown("### <span style='color:#FF5733;'>Opción B</span>", unsafe_allow_html=True)
+            st.markdown(f"Apuesta: **{p_guess*100:.0f}%** éxito, **{(1-p_guess)*100:.0f}%** fallo")
+            if st.container().button("Apostar", key=f"B_{device_name}"):
+                choice_clicked = "Lottery"
+        with colC:
+            st.markdown("### Indiferente", unsafe_allow_html=True)
+            if st.container().button("Me da igual", key=f"C_{device_name}"):
+                choice_clicked = "Indifferent"
+
+        # ── manejo de clic ─────────────────────────────────────
+        if choice_clicked is None:
+            return  # nada pulsado
+        if not store_answer:         # estamos en la demo → salir
+            st.rerun()
+
+        # preguntas reales: actualizamos min/max/guess o almacenamos
+        if choice_clicked == "Partial":
+            st.session_state[k_min] = p_guess
+        elif choice_clicked == "Lottery":
+            st.session_state[k_max] = p_guess
+        elif choice_clicked == "Indifferent":
+            st.session_state.responses_sg.setdefault(rid, {})[device_name] = p_guess * 100
+            st.session_state.page_index_sg += 1
+            st.rerun()
+            return
+        st.session_state[k_guess] = (st.session_state[k_min] + st.session_state[k_max]) / 2
+        st.rerun()
+        
 # ----------------------------------- Device Page (one per page) ---------------------------------
     
     def sg_interactive(index: int) -> None:
@@ -716,8 +834,8 @@ def standard_gamble_method():
                 choice_clicked = "Indifferent"
 
         # -------- Lógica tras la selección -----------------------------------
-        if choice_clicked is None:
-            return
+         if choice_clicked is None:
+            return  # nada pulsado
 
         if choice_clicked == "Partial":
             st.session_state[k_min] = p_guess
@@ -756,13 +874,17 @@ def standard_gamble_method():
             for dev in dev_load_map:
                 for suffix in ("p_min", "p_max", "p_guess"):
                     st.session_state.pop(f"{dev}_{suffix}", None)
-            st.session_state.page_index = 6   # saltar al método PC
+#            st.session_state.page_index = 6   # saltar al método PC
+            finish_current_respondent()   
             st.rerun()
+            return
 
 #------------------------------------------ SG Menu ---------------------------------------
 
     if page_sg  == 0:
         sg_intro_page()                                      #We show the intro page
+    elif page_sg == -1:
+        sg_example_page()
     elif 1 <= page_sg <= total_devices:                      #We repeat to obtain probabilities for each device
         sg_interactive(page_sg)
     else:
@@ -941,7 +1063,11 @@ def pairwise_method():                                     #We start the method
             if st.button("Finalizar este método"):
                 for k in ("page_index_pc", "wins_pc", "checked_pairs_pc"):
                     st.session_state.pop(k, None)
-                finish_current_respondent()
+#                finish_current_respondent()
+                # al terminar PC pasamos a SG
+                st.session_state.page_index_pc = 0
+                st.session_state.page_index    = 5      # Standard Gamble
+                st.rerun()
                 return
         else:
             A, B = pair
@@ -1156,529 +1282,545 @@ def run_optimisation(util_dict, power_map, P):
     return df
 
 # --------------------------- Analytics --------------------------------------
+
+#Password helper 
+
+def is_admin():
+    """Comprueba si la clave de admin ya está validada en la sesión."""
+    if st.session_state.get("_is_admin"):
+        return True
+    pwd = st.text_input("Contraseña de administrador", type="password")
+    if pwd and pwd == st.secrets["admin"]["password"]:
+        st.session_state["_is_admin"] = True
+        st.experimental_rerun()
+    return False
     
+#-------------------------
 def analytics_page():
     st.title("📊 Survey analytics")
 
-    # 1.  Always load the latest JSONs from disk
-    st.session_state.survey_data = load_all_responses()
-    meta = st.session_state.survey_meta
-
-    # 2.  Block access until the target sample size is done
-    if not meta.get("finished"):
-        st.warning(
-            "Still waiting for respondents – optimisation & analytics will "
-            "unlock automatically when the last questionnaire is complete."
+    if not is_admin():
+        st.stop()  
+    else:
+        # 1.  Always load the latest JSONs from disk
+        st.session_state.survey_data = load_all_responses()
+        meta = st.session_state.survey_meta
+    
+        # 2.  Block access until the target sample size is done
+        if not meta.get("finished"):
+            st.warning(
+                "Still waiting for respondents – optimisation & analytics will "
+                "unlock automatically when the last questionnaire is complete."
+            )
+    
+            if st.button("Keep on gathering data"):
+                st.session_state.page_index = 2
+                st.rerun()
+            return 
+    
+        # 3.  ───────────────────── build long-form dataframe ────────────────────
+        rows = []
+        for rec in st.session_state.survey_data:
+            rid = rec["id"]
+            for method, block in rec["Methods"].items():
+                for dev, util in block["utility"].items():
+                    rows.append(
+                        {
+                            "Respondent": rid,
+                            "Method": method,
+                            "Device": dev,
+                            "Utility": util,
+                        }
+                    )
+    
+        df = pd.DataFrame(rows)
+        if df.empty:
+            st.info("No data found on disk – please check your respondent files.")
+            return
+        #---------------------------- overall metrics (all methods together)----------------------------
+        st.header("Overall (all methods combined)")
+    
+        #---------------------------- 1-rank counts --------------------------------
+        top1_counts = (
+            df
+            .loc[df.groupby(["Respondent", "Method"])["Utility"].idxmax()]
+            .groupby("Device")["Utility"]
+            .size()
+            .rename("Top-1 count")
+            .reindex(dev_load_map, fill_value=0)
         )
-
-        if st.button("Keep on gathering data"):
-            st.session_state.page_index = 2
-            st.rerun()
-        return 
-
-    # 3.  ───────────────────── build long-form dataframe ────────────────────
-    rows = []
-    for rec in st.session_state.survey_data:
-        rid = rec["id"]
-        for method, block in rec["Methods"].items():
-            for dev, util in block["utility"].items():
-                rows.append(
-                    {
-                        "Respondent": rid,
-                        "Method": method,
-                        "Device": dev,
-                        "Utility": util,
-                    }
-                )
-
-    df = pd.DataFrame(rows)
-    if df.empty:
-        st.info("No data found on disk – please check your respondent files.")
-        return
-    #---------------------------- overall metrics (all methods together)----------------------------
-    st.header("Overall (all methods combined)")
-
-    #---------------------------- 1-rank counts --------------------------------
-    top1_counts = (
-        df
-        .loc[df.groupby(["Respondent", "Method"])["Utility"].idxmax()]
-        .groupby("Device")["Utility"]
-        .size()
-        .rename("Top-1 count")
-        .reindex(dev_load_map, fill_value=0)
-    )
-
-#    st.subheader("How often is each device ranked #1?")
-#    st.dataframe(top1_counts.to_frame())   # tabular view
-    st.altair_chart(
-        alt.Chart(top1_counts.reset_index(),
-                  title="Frequency of being ranked #1").mark_bar().encode(
-            x="Top-1 count:Q",
-            y=alt.Y("Device:N", 
-                    sort="-x",
-                    axis=alt.Axis(title=None, labelLimit=0, labelPadding=6))
-        ), use_container_width=True
-    )
-
-    #---------------------------- mean utilities ------------------------------------------
-        # 1.  Series → sorted (highest-first)
-    mean_util_ser = (
-        df.groupby("Device")["Utility"]
-          .mean()
-          .sort_values(ascending=False)         
-    )
     
-    # 2.  Nice table (already sorted) ─────────────────────────────────────
-    st.subheader("Average utility per device (0–100 %)")
-    st.dataframe(mean_util_ser.round(2).to_frame(name="Average utility"))
+    #    st.subheader("How often is each device ranked #1?")
+    #    st.dataframe(top1_counts.to_frame())   # tabular view
+        st.altair_chart(
+            alt.Chart(top1_counts.reset_index(),
+                      title="Frequency of being ranked #1").mark_bar().encode(
+                x="Top-1 count:Q",
+                y=alt.Y("Device:N", 
+                        sort="-x",
+                        axis=alt.Axis(title=None, labelLimit=0, labelPadding=6))
+            ), use_container_width=True
+        )
     
-    # 3.  Bar-chart with full labels, same order ──────────────────────────
-    mean_util_df = (
-        mean_util_ser.reset_index()              # columns → Device, Utility
-                      .rename(columns={"Utility": "Average utility"})
-    )
-    
-    st.altair_chart(
-        alt.Chart(mean_util_df, title="Mean utility")
-           .mark_bar()
-           .encode(
-               x="Average utility:Q",
-               y=alt.Y(
-                   "Device:N",
-                   sort=mean_util_ser.index.tolist(),     # keep the same order
-                   axis=alt.Axis(
-                       title=None,        # ← remove the “Device” title
-                       labelLimit=0,      # show full names
-                       labelPadding=4     # tiny gap from the bars
+        #---------------------------- mean utilities ------------------------------------------
+            # 1.  Series → sorted (highest-first)
+        mean_util_ser = (
+            df.groupby("Device")["Utility"]
+              .mean()
+              .sort_values(ascending=False)         
+        )
+        
+        # 2.  Nice table (already sorted) ─────────────────────────────────────
+        st.subheader("Average utility per device (0–100 %)")
+        st.dataframe(mean_util_ser.round(2).to_frame(name="Average utility"))
+        
+        # 3.  Bar-chart with full labels, same order ──────────────────────────
+        mean_util_df = (
+            mean_util_ser.reset_index()              # columns → Device, Utility
+                          .rename(columns={"Utility": "Average utility"})
+        )
+        
+        st.altair_chart(
+            alt.Chart(mean_util_df, title="Mean utility")
+               .mark_bar()
+               .encode(
+                   x="Average utility:Q",
+                   y=alt.Y(
+                       "Device:N",
+                       sort=mean_util_ser.index.tolist(),     # keep the same order
+                       axis=alt.Axis(
+                           title=None,        # ← remove the “Device” title
+                           labelLimit=0,      # show full names
+                           labelPadding=4     # tiny gap from the bars
+                       )
                    )
-               )
-           ),
-        use_container_width=True,
-    )
-
-    # ----------------------------- per-method breakdown -------------------------------
-    st.header("Method comparison")
+               ),
+            use_container_width=True,
+        )
     
-    # -------------------------- 1. plain-text winners ------------------------------------
-    overall_winner = top1_counts.idxmax()
-    sg_winner      = top1_counts.loc[dev_load_map]  # reuse but filter below
-    pc_winner      = top1_counts.loc[dev_load_map]
-    
-    sg_winner = (
-        df[df["Method"] == "SG"]
-          .groupby("Respondent")["Utility"].idxmax()
-          .map(df.loc[:, "Device"])
-          .value_counts()
-          .idxmax()
-    )
-    
-    pc_winner = (
-        df[df["Method"] == "PC"]
-          .groupby("Respondent")["Utility"].idxmax()
-          .map(df.loc[:, "Device"])
-          .value_counts()
-          .idxmax()
-    )
-    
-    st.markdown(
-        f"* **Overall #1 device:** {overall_winner}\n"
-        f"* **SG #1 device:** {sg_winner}\n"
-        f"* **PC #1 device:** {pc_winner}"
-    )
-    
-    # --------------------- 2. combined utility bar-chart ----------------------------
-    # prepare long form dataframe with a colour label
-    combo = (
+        # ----------------------------- per-method breakdown -------------------------------
+        st.header("Method comparison")
+        
+        # -------------------------- 1. plain-text winners ------------------------------------
+        overall_winner = top1_counts.idxmax()
+        sg_winner      = top1_counts.loc[dev_load_map]  # reuse but filter below
+        pc_winner      = top1_counts.loc[dev_load_map]
+        
+        sg_winner = (
+            df[df["Method"] == "SG"]
+              .groupby("Respondent")["Utility"].idxmax()
+              .map(df.loc[:, "Device"])
+              .value_counts()
+              .idxmax()
+        )
+        
+        pc_winner = (
+            df[df["Method"] == "PC"]
+              .groupby("Respondent")["Utility"].idxmax()
+              .map(df.loc[:, "Device"])
+              .value_counts()
+              .idxmax()
+        )
+        
+        st.markdown(
+            f"* **Overall #1 device:** {overall_winner}\n"
+            f"* **SG #1 device:** {sg_winner}\n"
+            f"* **PC #1 device:** {pc_winner}"
+        )
+        
+        # --------------------- 2. combined utility bar-chart ----------------------------
+        # prepare long form dataframe with a colour label
+        combo = (
+            df.groupby(["Method", "Device"])["Utility"]
+              .mean()
+              .reset_index()
+        )
+        
+        # two charts with identical scale concatenated left-right
+        chart_sg = (
+            alt.Chart(combo[combo.Method == "SG"])
+                .mark_bar(color="#1f77b4")           # blue
+                .encode(
+                    x=alt.X("Utility:Q", scale=alt.Scale(domain=[0, 100])),
+                    y=alt.Y("Device:N", sort=dev_load_map)
+                )
+                .properties(title="SG mean")
+        )
+        
+        chart_pc = (
+            alt.Chart(combo[combo.Method == "PC"])
+                .mark_bar(color="#d62728")           # red
+                .encode(
+                    x=alt.X("Utility:Q", scale=alt.Scale(domain=[0, 100])),
+                    y=alt.Y("Device:N", sort=dev_load_map)
+                )
+                .properties(title="PC mean")
+        )
+        
+        st.altair_chart(alt.hconcat(chart_sg, chart_pc), use_container_width=True)
+        
+        # ---------------------- slope chart -------------------------------
+        util_tbl = (
         df.groupby(["Method", "Device"])["Utility"]
           .mean()
+          .unstack("Method")          # columns: SG, PC
+          .reindex(dev_load_map)
           .reset_index()
-    )
-    
-    # two charts with identical scale concatenated left-right
-    chart_sg = (
-        alt.Chart(combo[combo.Method == "SG"])
-            .mark_bar(color="#1f77b4")           # blue
-            .encode(
-                x=alt.X("Utility:Q", scale=alt.Scale(domain=[0, 100])),
-                y=alt.Y("Device:N", sort=dev_load_map)
-            )
-            .properties(title="SG mean")
-    )
-    
-    chart_pc = (
-        alt.Chart(combo[combo.Method == "PC"])
-            .mark_bar(color="#d62728")           # red
-            .encode(
-                x=alt.X("Utility:Q", scale=alt.Scale(domain=[0, 100])),
-                y=alt.Y("Device:N", sort=dev_load_map)
-            )
-            .properties(title="PC mean")
-    )
-    
-    st.altair_chart(alt.hconcat(chart_sg, chart_pc), use_container_width=True)
-    
-    # ---------------------- slope chart -------------------------------
-    util_tbl = (
-    df.groupby(["Method", "Device"])["Utility"]
-      .mean()
-      .unstack("Method")          # columns: SG, PC
-      .reindex(dev_load_map)
-      .reset_index()
-    )
-
-    bullet_base = alt.Chart(util_tbl).encode(
-    y=alt.Y("Device:N", sort=dev_load_map, title=None),
-    color="Device:N"
-    )
-
-    bullet_lines = bullet_base.mark_line().encode(
-        x=alt.X("SG:Q", scale=alt.Scale(domain=[0, 100]),
-                axis=alt.Axis(title="Utility (%)")),
-        x2="PC:Q"
-    )
-
-    sg_dots = bullet_base.mark_point(filled=True, size=70).encode(x="SG:Q")
-    pc_dots = bullet_base.mark_point(filled=False, size=70, strokeWidth=2).encode(x="PC:Q")
-    
-    util_chart = (bullet_lines + sg_dots + pc_dots).properties(
-        title="Mean utility – SG (●)  →  PC (○)",
-        width=620
-    )
-
-    st.altair_chart(util_chart, use_container_width=True)
-    save_chart(util_chart, "utilities_sg_pc")
-
-    # ------------------- crossover ranking chart -----------------------------
-    # build a “long” table: one row per device × side
-    st.markdown("**PC → SG**".format(n=len(dev_load_map)))
-    st.markdown("**Rank: 1 (top) → {n} (bottom)**".format(n=len(dev_load_map)))
-    
-    # 1. Compute ranks
-    rank_sg = (
-        df[df.Method=="SG"]
-          .groupby("Device")["Utility"].mean()
-          .rank(ascending=False, method="first")
-          .astype(int)
-    )
-    rank_pc = (
-        df[df.Method=="PC"]
-          .groupby("Device")["Utility"].mean()
-          .rank(ascending=False, method="first")
-          .astype(int)
-    )
-    
-    # 2. Build long-form DataFrame
-    cross_df = pd.DataFrame(
-        [{"Device": d, "Side":"PC", "x": 0, "rank": rank_pc[d]} for d in dev_load_map] +
-        [{"Device": d, "Side":"SG", "x": 1, "rank": rank_sg[d]} for d in dev_load_map]
-    )
-    
-    # 3. Base chart: hide both axes
-    base = alt.Chart(cross_df).encode(
-        x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[0,1])),
-        y=alt.Y("rank:Q",
-                axis=None,
-                scale=alt.Scale(domain=[0.5, len(dev_load_map)+0.5], reverse=True))
-    )
-    
-    # 4. Lines + points colored by device
-    lines = base.mark_line(strokeWidth=1.5).encode(
-        detail="Device:N",
-        color=alt.Color("Device:N", legend=None)
-    )
-    points = base.mark_point(size=80, filled=True).encode(
-        color=alt.Color("Device:N", legend=None)
-    )
-    
-    # 5. Left labels (PC side) and right labels (SG side)
-    labels_left = (
-        base.transform_filter("datum.Side == 'PC'")
-            .mark_text(align="right", baseline="middle", dx=-10)
-            .encode(text="Device:N", color=alt.Color("Device:N", legend=None))
-    )
-    labels_right = (
-        base.transform_filter("datum.Side == 'SG'")
-            .mark_text(align="left", baseline="middle", dx=10)
-            .encode(text="Device:N", color=alt.Color("Device:N", legend=None))
-    )
-    
-    # 6. Compose & render
-    rank_shift = (
-        (lines + points + labels_left + labels_right)
-          .properties(width=600, height=25 * len(dev_load_map))
-          .configure_view(stroke=None)
-    )
-    st.altair_chart(rank_shift, use_container_width=True)
-    save_chart(rank_shift, "rank_crossover")
-
-    # --------------------- energy-budget optimisation -------------------------
-    st.header("Optimised device bundle")
-    
-    if st.session_state.max_power is None:
-        st.info("Maximum power not set – configure it on the setup page.")
-        return
-    
-    # Build one utility number per device according to the survey-taker’s choice
-    choice = st.session_state.utility_source   # "PC", "SG", "Average"
-
-    if choice == "Average":
-        util_tbl = df.groupby("Device")["Utility"].mean()
-    else:
-        util_tbl = (
-            df[df.Method == choice]
-              .groupby("Device")["Utility"].mean()
         )
     
-    # ----- Keep only devices that are present in the facility, then rescale -----
-    avail_set = st.session_state.facility_devices
-    util_opt  = filter_and_rescale_for_optim(util_tbl, avail_set, renorm=True)
-    
-    if util_opt.empty:
-        st.warning("No available devices selected on the availability page!")
-        return                # nothing to optimise
-    
-    # Note: util_opt is now 0-to-1; LP/DP don’t care about the scale.
-    opt_df = run_optimisation(util_opt.to_dict(), power_map, st.session_state.max_power)
-
-    opt_df["Utility01"]           = opt_df["Utility"] / 100        # 0-1 per device
-    opt_df["Utility01_per_Watt"]  = opt_df["Utility01"] / opt_df["Power"]
-
-            # helper to build text + table for one solver
-    def bundle_summary(tag, flag_col, colour):
-        avail_cnt = len(st.session_state.facility_devices)
-        sel = opt_df[opt_df[flag_col] == 1][["Device", "Utility", "Power"]]
-        sel_cnt = len(sel)
-        sel.index = np.arange(1, sel_cnt + 1)
-        tot_p = sel["Power"].sum()
-        tot_u = sel["Utility"].sum()
-        spare = st.session_state.max_power - tot_p
-        headline = (
-            f"From **{avail_cnt}** devices in the facility, "
-            f"this critical-load set contains **{sel_cnt}** devices."
+        bullet_base = alt.Chart(util_tbl).encode(
+        y=alt.Y("Device:N", sort=dev_load_map, title=None),
+        color="Device:N"
         )
-        st.markdown(
-            headline + "<br>" +
-            f"**{tag} solution** &nbsp; "
-            f"total power **{tot_p:.0f} W** / {st.session_state.max_power} W "
-            f"({'{:+.0f}'.format(spare)} W spare)  &nbsp;|&nbsp; "
-            f"total utility **{tot_u:.1f}**",
-            unsafe_allow_html=True
+    
+        bullet_lines = bullet_base.mark_line().encode(
+            x=alt.X("SG:Q", scale=alt.Scale(domain=[0, 100]),
+                    axis=alt.Axis(title="Utility (%)")),
+            x2="PC:Q"
         )
-        st.table(sel.style.applymap(
-            lambda _: f"background-color:{colour}; color:white")
-        )
-        st.markdown("---")
-
-    # ------------------------ textual sumary ----------------------------
-    pow_lp = int(opt_df["LP_pick_power"].sum())
-    pow_dp = int(opt_df["DP_pick_power"].sum())
-    util_lp = opt_df["LP_pick_utility"].sum()
-    util_dp = opt_df["DP_pick_utility"].sum()
     
-    st.markdown(
-    f"*Capacity:* **{st.session_state.max_power} W** &nbsp;&nbsp;|&nbsp;&nbsp; "
-    f"**LP bundle:** {pow_lp} W → {util_lp:.1f} util &nbsp;&nbsp;|&nbsp;&nbsp; "
-    f"**DP bundle:** {pow_dp} W → {util_dp:.1f} util"
-    )
-    
-    # ---------------------- Plot 1 power allocation ------------------
-
-    sel_any = opt_df[(opt_df.LP_pick == 1) | (opt_df.DP_pick == 1)]    
-    y = np.arange(len(sel_any))
-    bar_height = 0.4
-    
-    st.subheader("Power allocation (blue = LP, orange = DP)")
-    fig1, ax1 = plt.subplots(figsize=(7, 0.45*len(opt_df)))
-    
-    ax1.barh(y-bar_height/2, sel_any["LP_pick_power"], height=bar_height,
-             color="steelblue", label="LP")
-    ax1.barh(y+bar_height/2, sel_any["DP_pick_power"], height=bar_height,
-             color="darkorange", alpha=.8, label="DP")
-
-    lp_used = sel_any["LP_pick_power"].sum()
-
-    ax1.axvline(st.session_state.max_power, ls="--", color="red",  label="Capacity")
-    ax1.axvline(pow_dp, ls="--", color="darkorange",label="DP used")
-    ax1.axvline(lp_used, ls="--", color="steelblue", label="LP used")
-    
-    ax1.set_yticks(y, sel_any["Device"])
-    ax1.set_xlabel("Power (W)")
-    ax1.legend(); 
-    st.pyplot(fig1)
-    
-    # ------------------ Plot 2 utility per watt bars  ------------------
-    st.subheader("Utility per Watt (selected devices coloured)")
-    y2 = np.arange(len(opt_df))
-    bar_height = 0.4
-    
-    fig2, ax2 = plt.subplots(figsize=(7, 0.45*len(opt_df)))
-    ax2.barh(y2-bar_height/2, opt_df["Utility01_per_Watt"],
-             height=bar_height,
-             color=np.where(opt_df["LP_pick"], "steelblue", "#d0d0ff"))
-    
-    ax2.barh(y2+bar_height/2, opt_df["Utility01_per_Watt"],
-             height=bar_height,
-             color=np.where(opt_df["DP_pick"], "darkorange", "#ffd8b0"))
-    
-    ax2.set_yticks(y2, opt_df["Device"])
-    ax2.set_xlabel("Utility (0–1) per W")                  
-    st.pyplot(fig2)
-
-    # ------------------ PLOT 3 – cumulative-utility curves ------------------
-    st.subheader("Cumulative utility vs. power")
-
-    # Build the “order” DataFrame if not already in scope
-    order = opt_df.sort_values("Utility01_per_Watt", ascending=False).copy()
-    order["cum_P"]   = order["Power"].cumsum()
-    order["cum_U01"] = order["Utility01"].cumsum()
-    
-    # Identify the DP bundle point
-    dp_P   = order.loc[order["DP_pick"] == 1, "Power"].cumsum().iloc[-1]
-    dp_U01 = order.loc[order["DP_pick"] == 1, "Utility01"].cumsum().iloc[-1]
-    
-    # Create the figure
-    fig3, ax3 = plt.subplots(figsize=(7, 4))
-    ax3.plot(order["cum_P"], order["cum_U01"],
-             marker="o", linestyle="-", color="steelblue",
-             label="Greedy order (rounding)")
-    
-    ax3.scatter(dp_P, dp_U01,
-                marker="^", s=100, color="darkorange",
-                label="DP")
-    ax3.axvline(st.session_state.max_power,
-                ls="--", color="red", label="Capacity")
-    
-    # Collect Text objects
-    texts = []
-    for _, row in order.iterrows():
-        txt = ax3.text(
-            row.cum_P, row.cum_U01,
-            row.Device,
-            fontsize=8,
-            ha="center", va="center"
-        )
-        texts.append(txt)
-    
-    # Let adjustText shove them apart
-    adjust_text(
-        texts,
-        only_move={"text":"xy"},
-        arrowprops=dict(arrowstyle='-', color='gray', alpha=0.5),
-        expand_text=(1.05, 1.2),
-        expand_points=(1.05,1.2)
-    )
-    
-    ax3.set_xlabel("Cumulative power (W)")
-    ax3.set_ylabel("Cumulative utility (0–1)")
-    ax3.legend(loc="lower right")
-    st.pyplot(fig3)    
+        sg_dots = bullet_base.mark_point(filled=True, size=70).encode(x="SG:Q")
+        pc_dots = bullet_base.mark_point(filled=False, size=70, strokeWidth=2).encode(x="PC:Q")
         
-    # ------------------ PLOT 4 – sensitivity analysis ------------------
-    st.subheader("Sensitivity: best utility vs. available power")
-
-    # 1. Prepare data
-    P_steps     = np.arange(200, st.session_state.max_power + 800, 200)
-    best_lp, best_dp = [], []
-    lbl_lp, lbl_dp   = [], []
-    prev_lp_set      = set()
-    prev_dp_set      = set()
+        util_chart = (bullet_lines + sg_dots + pc_dots).properties(
+            title="Mean utility – SG (●)  →  PC (○)",
+            width=620
+        )
     
-    weights_int = opt_df["Power"].round().astype(int).tolist()
-    values      = opt_df["Utility"].tolist()
+        st.altair_chart(util_chart, use_container_width=True)
+        save_chart(util_chart, "utilities_sg_pc")
     
-    # 2. Compute at each capacity
-    for P in P_steps:
-        # — Greedy / LP approximation —
-        cur_P = cur_U = 0
-        added_lp = ""
+        # ------------------- crossover ranking chart -----------------------------
+        # build a “long” table: one row per device × side
+        st.markdown("**PC → SG**".format(n=len(dev_load_map)))
+        st.markdown("**Rank: 1 (top) → {n} (bottom)**".format(n=len(dev_load_map)))
+        
+        # 1. Compute ranks
+        rank_sg = (
+            df[df.Method=="SG"]
+              .groupby("Device")["Utility"].mean()
+              .rank(ascending=False, method="first")
+              .astype(int)
+        )
+        rank_pc = (
+            df[df.Method=="PC"]
+              .groupby("Device")["Utility"].mean()
+              .rank(ascending=False, method="first")
+              .astype(int)
+        )
+        
+        # 2. Build long-form DataFrame
+        cross_df = pd.DataFrame(
+            [{"Device": d, "Side":"PC", "x": 0, "rank": rank_pc[d]} for d in dev_load_map] +
+            [{"Device": d, "Side":"SG", "x": 1, "rank": rank_sg[d]} for d in dev_load_map]
+        )
+        
+        # 3. Base chart: hide both axes
+        base = alt.Chart(cross_df).encode(
+            x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[0,1])),
+            y=alt.Y("rank:Q",
+                    axis=None,
+                    scale=alt.Scale(domain=[0.5, len(dev_load_map)+0.5], reverse=True))
+        )
+        
+        # 4. Lines + points colored by device
+        lines = base.mark_line(strokeWidth=1.5).encode(
+            detail="Device:N",
+            color=alt.Color("Device:N", legend=None)
+        )
+        points = base.mark_point(size=80, filled=True).encode(
+            color=alt.Color("Device:N", legend=None)
+        )
+        
+        # 5. Left labels (PC side) and right labels (SG side)
+        labels_left = (
+            base.transform_filter("datum.Side == 'PC'")
+                .mark_text(align="right", baseline="middle", dx=-10)
+                .encode(text="Device:N", color=alt.Color("Device:N", legend=None))
+        )
+        labels_right = (
+            base.transform_filter("datum.Side == 'SG'")
+                .mark_text(align="left", baseline="middle", dx=10)
+                .encode(text="Device:N", color=alt.Color("Device:N", legend=None))
+        )
+        
+        # 6. Compose & render
+        rank_shift = (
+            (lines + points + labels_left + labels_right)
+              .properties(width=600, height=25 * len(dev_load_map))
+              .configure_view(stroke=None)
+        )
+        st.altair_chart(rank_shift, use_container_width=True)
+        save_chart(rank_shift, "rank_crossover")
+    
+        # --------------------- energy-budget optimisation -------------------------
+        st.header("Optimised device bundle")
+        
+        if st.session_state.max_power is None:
+            st.info("Maximum power not set – configure it on the setup page.")
+            return
+        
+        # Build one utility number per device according to the survey-taker’s choice
+        choice = st.session_state.utility_source   # "PC", "SG", "Average"
+    
+        if choice == "Average":
+            util_tbl = df.groupby("Device")["Utility"].mean()
+        else:
+            util_tbl = (
+                df[df.Method == choice]
+                  .groupby("Device")["Utility"].mean()
+            )
+        
+        # ----- Keep only devices that are present in the facility, then rescale -----
+        avail_set = st.session_state.facility_devices
+        util_opt  = filter_and_rescale_for_optim(util_tbl, avail_set, renorm=True)
+        
+        if util_opt.empty:
+            st.warning("No available devices selected on the availability page!")
+            return                # nothing to optimise
+        
+        # Note: util_opt is now 0-to-1; LP/DP don’t care about the scale.
+        opt_df = run_optimisation(util_opt.to_dict(), power_map, st.session_state.max_power)
+    
+        opt_df["Utility01"]           = opt_df["Utility"] / 100        # 0-1 per device
+        opt_df["Utility01_per_Watt"]  = opt_df["Utility01"] / opt_df["Power"]
+    
+                # helper to build text + table for one solver
+        def bundle_summary(tag, flag_col, colour):
+            avail_cnt = len(st.session_state.facility_devices)
+            sel = opt_df[opt_df[flag_col] == 1][["Device", "Utility", "Power"]]
+            sel_cnt = len(sel)
+            sel.index = np.arange(1, sel_cnt + 1)
+            tot_p = sel["Power"].sum()
+            tot_u = sel["Utility"].sum()
+            spare = st.session_state.max_power - tot_p
+            headline = (
+                f"From **{avail_cnt}** devices in the facility, "
+                f"this critical-load set contains **{sel_cnt}** devices."
+            )
+            st.markdown(
+                headline + "<br>" +
+                f"**{tag} solution** &nbsp; "
+                f"total power **{tot_p:.0f} W** / {st.session_state.max_power} W "
+                f"({'{:+.0f}'.format(spare)} W spare)  &nbsp;|&nbsp; "
+                f"total utility **{tot_u:.1f}**",
+                unsafe_allow_html=True
+            )
+            st.table(sel.style.applymap(
+                lambda _: f"background-color:{colour}; color:white")
+            )
+            st.markdown("---")
+    
+        # ------------------------ textual sumary ----------------------------
+        pow_lp = int(opt_df["LP_pick_power"].sum())
+        pow_dp = int(opt_df["DP_pick_power"].sum())
+        util_lp = opt_df["LP_pick_utility"].sum()
+        util_dp = opt_df["DP_pick_utility"].sum()
+        
+        st.markdown(
+        f"*Capacity:* **{st.session_state.max_power} W** &nbsp;&nbsp;|&nbsp;&nbsp; "
+        f"**LP bundle:** {pow_lp} W → {util_lp:.1f} util &nbsp;&nbsp;|&nbsp;&nbsp; "
+        f"**DP bundle:** {pow_dp} W → {util_dp:.1f} util"
+        )
+        
+        # ---------------------- Plot 1 power allocation ------------------
+    
+        sel_any = opt_df[(opt_df.LP_pick == 1) | (opt_df.DP_pick == 1)]    
+        y = np.arange(len(sel_any))
+        bar_height = 0.4
+        
+        st.subheader("Power allocation (blue = LP, orange = DP)")
+        fig1, ax1 = plt.subplots(figsize=(7, 0.45*len(opt_df)))
+        
+        ax1.barh(y-bar_height/2, sel_any["LP_pick_power"], height=bar_height,
+                 color="steelblue", label="LP")
+        ax1.barh(y+bar_height/2, sel_any["DP_pick_power"], height=bar_height,
+                 color="darkorange", alpha=.8, label="DP")
+    
+        lp_used = sel_any["LP_pick_power"].sum()
+    
+        ax1.axvline(st.session_state.max_power, ls="--", color="red",  label="Capacity")
+        ax1.axvline(pow_dp, ls="--", color="darkorange",label="DP used")
+        ax1.axvline(lp_used, ls="--", color="steelblue", label="LP used")
+        
+        ax1.set_yticks(y, sel_any["Device"])
+        ax1.set_xlabel("Power (W)")
+        ax1.legend(); 
+        st.pyplot(fig1)
+        
+        # ------------------ Plot 2 utility per watt bars  ------------------
+        st.subheader("Utility per Watt (selected devices coloured)")
+        y2 = np.arange(len(opt_df))
+        bar_height = 0.4
+        
+        fig2, ax2 = plt.subplots(figsize=(7, 0.45*len(opt_df)))
+        ax2.barh(y2-bar_height/2, opt_df["Utility01_per_Watt"],
+                 height=bar_height,
+                 color=np.where(opt_df["LP_pick"], "steelblue", "#d0d0ff"))
+        
+        ax2.barh(y2+bar_height/2, opt_df["Utility01_per_Watt"],
+                 height=bar_height,
+                 color=np.where(opt_df["DP_pick"], "darkorange", "#ffd8b0"))
+        
+        ax2.set_yticks(y2, opt_df["Device"])
+        ax2.set_xlabel("Utility (0–1) per W")                  
+        st.pyplot(fig2)
+    
+        # ------------------ PLOT 3 – cumulative-utility curves ------------------
+        st.subheader("Cumulative utility vs. power")
+    
+        # Build the “order” DataFrame if not already in scope
+        order = opt_df.sort_values("Utility01_per_Watt", ascending=False).copy()
+        order["cum_P"]   = order["Power"].cumsum()
+        order["cum_U01"] = order["Utility01"].cumsum()
+        
+        # Identify the DP bundle point
+        dp_P   = order.loc[order["DP_pick"] == 1, "Power"].cumsum().iloc[-1]
+        dp_U01 = order.loc[order["DP_pick"] == 1, "Utility01"].cumsum().iloc[-1]
+        
+        # Create the figure
+        fig3, ax3 = plt.subplots(figsize=(7, 4))
+        ax3.plot(order["cum_P"], order["cum_U01"],
+                 marker="o", linestyle="-", color="steelblue",
+                 label="Greedy order (rounding)")
+        
+        ax3.scatter(dp_P, dp_U01,
+                    marker="^", s=100, color="darkorange",
+                    label="DP")
+        ax3.axvline(st.session_state.max_power,
+                    ls="--", color="red", label="Capacity")
+        
+        # Collect Text objects
+        texts = []
         for _, row in order.iterrows():
-            if cur_P + row["Power"] <= P:
-                if row["Device"] not in prev_lp_set:
-                    added_lp = row["Device"]
-                cur_P += row["Power"]
-                cur_U += row["Utility"]
-        best_lp.append(cur_U)
-        lbl_lp.append(added_lp)
-        if added_lp:
-            prev_lp_set.add(added_lp)
+            txt = ax3.text(
+                row.cum_P, row.cum_U01,
+                row.Device,
+                fontsize=8,
+                ha="center", va="center"
+            )
+            texts.append(txt)
+        
+        # Let adjustText shove them apart
+        adjust_text(
+            texts,
+            only_move={"text":"xy"},
+            arrowprops=dict(arrowstyle='-', color='gray', alpha=0.5),
+            expand_text=(1.05, 1.2),
+            expand_points=(1.05,1.2)
+        )
+        
+        ax3.set_xlabel("Cumulative power (W)")
+        ax3.set_ylabel("Cumulative utility (0–1)")
+        ax3.legend(loc="lower right")
+        st.pyplot(fig3)    
+            
+        # ------------------ PLOT 4 – sensitivity analysis ------------------
+        st.subheader("Sensitivity: best utility vs. available power")
     
-        # — Exact 0-1 DP optimum —
-        sel      = knapsack_dp(weights_int, values, P)
-        mask     = np.array(sel, dtype=bool)
-        cur_dp   = set(opt_df.loc[mask, "Device"])
-        new_dp   = cur_dp - prev_dp_set
-        added_dp = next(iter(new_dp)) if new_dp else ""
-        best_dp.append(opt_df.loc[mask, "Utility"].sum())
-        lbl_dp.append(added_dp)
-        if added_dp:
-            prev_dp_set.add(added_dp)
+        # 1. Prepare data
+        P_steps     = np.arange(200, st.session_state.max_power + 800, 200)
+        best_lp, best_dp = [], []
+        lbl_lp, lbl_dp   = [], []
+        prev_lp_set      = set()
+        prev_dp_set      = set()
+        
+        weights_int = opt_df["Power"].round().astype(int).tolist()
+        values      = opt_df["Utility"].tolist()
+        
+        # 2. Compute at each capacity
+        for P in P_steps:
+            # — Greedy / LP approximation —
+            cur_P = cur_U = 0
+            added_lp = ""
+            for _, row in order.iterrows():
+                if cur_P + row["Power"] <= P:
+                    if row["Device"] not in prev_lp_set:
+                        added_lp = row["Device"]
+                    cur_P += row["Power"]
+                    cur_U += row["Utility"]
+            best_lp.append(cur_U)
+            lbl_lp.append(added_lp)
+            if added_lp:
+                prev_lp_set.add(added_lp)
+        
+            # — Exact 0-1 DP optimum —
+            sel      = knapsack_dp(weights_int, values, P)
+            mask     = np.array(sel, dtype=bool)
+            cur_dp   = set(opt_df.loc[mask, "Device"])
+            new_dp   = cur_dp - prev_dp_set
+            added_dp = next(iter(new_dp)) if new_dp else ""
+            best_dp.append(opt_df.loc[mask, "Utility"].sum())
+            lbl_dp.append(added_dp)
+            if added_dp:
+                prev_dp_set.add(added_dp)
+        
+        # 3. Draw side-by-side subplots
+        fig4, (ax_lp, ax_dp) = plt.subplots(1, 2, figsize=(12, 4),
+                                           sharey=True, sharex=True)
+        
+        # — Greedy/LP plot —
+        ax_lp.plot(P_steps, best_lp, "-o", color="steelblue", label="Greedy/LP")
+        texts_lp = []
+        for x, y, dev in zip(P_steps, best_lp, lbl_lp):
+            if not dev:
+                continue
+            txt = ax_lp.text(x, y, dev,
+                             fontsize=7, color="steelblue",
+                             ha="left", va="bottom")
+            texts_lp.append(txt)
+        ax_lp.axvline(st.session_state.max_power, ls="--", color="red")
+        ax_lp.set_title("Greedy/LP sensitivity")
+        ax_lp.set_xlabel("Available power (W)")
+        ax_lp.set_ylabel("Max utility achievable (0–1)")
+        
+        # declutter LP labels
+        adjust_text(
+            texts_lp,
+            only_move={'text':'xy'},
+            arrowprops=dict(arrowstyle='-', color='gray', alpha=0.3),
+            expand_text=(1.02, 1.2),
+            expand_points=(1.02, 1.2),
+            ax=ax_lp
+        )
+        
+        # — Exact DP plot —
+        ax_dp.plot(P_steps, best_dp, "-^", color="darkorange", label="Exact DP")
+        texts_dp = []
+        for x, y, dev in zip(P_steps, best_dp, lbl_dp):
+            if not dev:
+                continue
+            txt = ax_dp.text(x, y, dev,
+                             fontsize=7, color="darkorange",
+                             ha="left", va="top")
+            texts_dp.append(txt)
+        ax_dp.axvline(st.session_state.max_power, ls="--", color="red")
+        ax_dp.set_title("Exact DP sensitivity")
+        ax_dp.set_xlabel("Available power (W)")
+        
+        # declutter DP labels
+        adjust_text(
+            texts_dp,
+            only_move={'text':'xy'},
+            arrowprops=dict(arrowstyle='-', color='gray', alpha=0.3),
+            expand_text=(1.02, 1.2),
+            expand_points=(1.02, 1.2),
+            ax=ax_dp
+        )
+        
+        # 4. Shared legend & layout
+        fig4.legend(loc="upper center", ncol=2, frameon=False)
+        fig4.tight_layout(rect=[0, 0, 1, 0.94])
+        st.pyplot(fig4)
     
-    # 3. Draw side-by-side subplots
-    fig4, (ax_lp, ax_dp) = plt.subplots(1, 2, figsize=(12, 4),
-                                       sharey=True, sharex=True)
+        st.header("Device list chosen by each optimiser")
     
-    # — Greedy/LP plot —
-    ax_lp.plot(P_steps, best_lp, "-o", color="steelblue", label="Greedy/LP")
-    texts_lp = []
-    for x, y, dev in zip(P_steps, best_lp, lbl_lp):
-        if not dev:
-            continue
-        txt = ax_lp.text(x, y, dev,
-                         fontsize=7, color="steelblue",
-                         ha="left", va="bottom")
-        texts_lp.append(txt)
-    ax_lp.axvline(st.session_state.max_power, ls="--", color="red")
-    ax_lp.set_title("Greedy/LP sensitivity")
-    ax_lp.set_xlabel("Available power (W)")
-    ax_lp.set_ylabel("Max utility achievable (0–1)")
+        bundle_summary("Relaxed-LP", "LP_pick", "#1f77b4")      # blue
+        bundle_summary("0-1 DP",    "DP_pick", "#ff7f0e")       # orange
     
-    # declutter LP labels
-    adjust_text(
-        texts_lp,
-        only_move={'text':'xy'},
-        arrowprops=dict(arrowstyle='-', color='gray', alpha=0.3),
-        expand_text=(1.02, 1.2),
-        expand_points=(1.02, 1.2),
-        ax=ax_lp
-    )
-    
-    # — Exact DP plot —
-    ax_dp.plot(P_steps, best_dp, "-^", color="darkorange", label="Exact DP")
-    texts_dp = []
-    for x, y, dev in zip(P_steps, best_dp, lbl_dp):
-        if not dev:
-            continue
-        txt = ax_dp.text(x, y, dev,
-                         fontsize=7, color="darkorange",
-                         ha="left", va="top")
-        texts_dp.append(txt)
-    ax_dp.axvline(st.session_state.max_power, ls="--", color="red")
-    ax_dp.set_title("Exact DP sensitivity")
-    ax_dp.set_xlabel("Available power (W)")
-    
-    # declutter DP labels
-    adjust_text(
-        texts_dp,
-        only_move={'text':'xy'},
-        arrowprops=dict(arrowstyle='-', color='gray', alpha=0.3),
-        expand_text=(1.02, 1.2),
-        expand_points=(1.02, 1.2),
-        ax=ax_dp
-    )
-    
-    # 4. Shared legend & layout
-    fig4.legend(loc="upper center", ncol=2, frameon=False)
-    fig4.tight_layout(rect=[0, 0, 1, 0.94])
-    st.pyplot(fig4)
-
-    st.header("Device list chosen by each optimiser")
-
-    bundle_summary("Relaxed-LP", "LP_pick", "#1f77b4")      # blue
-    bundle_summary("0-1 DP",    "DP_pick", "#ff7f0e")       # orange
-
-    if st.button("Change optimisation parameters"):
-        st.session_state.page_index = 98
-        st.stop()
+        if st.button("Change optimisation parameters"):
+            st.session_state.page_index = 98
+            st.stop()
 
 ################################################################################
 #  Main Menu                                                                   #
@@ -1694,9 +1836,9 @@ def main():
 #        configure_load_contents()       
     elif page == 2: 
         respondent_intro_page()
-    elif page == 5: 
-        standard_gamble_method()
     elif page == 6: 
+        standard_gamble_method()
+    elif page == 5: 
         pairwise_method()
     elif page == 98: 
         optimisation_setup_page()       
