@@ -1853,9 +1853,9 @@ def main():
 #        configure_load_contents()       
     elif page == 2: 
         respondent_intro_page()
-    elif page == 6: 
-        standard_gamble_method()
     elif page == 5: 
+        standard_gamble_method()
+    elif page == 6: 
         pairwise_method()
     elif page == 98: 
         optimisation_setup_page()       
