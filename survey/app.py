@@ -667,7 +667,7 @@ def standard_gamble_method():
             ### ¿Qué tiene que hacer entonces usted? 
             * Primero, ver de qué dispositivo se trata.
             * Segundo, pensar qué tan importante es para usted. 
-            * Tercero, **si** cree que la probabilidad inicial asignada (50% de que funcionará sin problemas- 50% de que no funcionará en ningún caso) **representa lo valioso que es para usted** este aparato, puede clicar en indiferente y avanzar al siguiente aparato. Si, por el contrario, considera que es más importante para usted que funcione el aparato en cuestión, debe seleccionar la opción A (para incrementar la probabilidad de que debe funcionar en cualquier caso) tantas veces como crea necesario hasta obtener la probabilidad **P**% deseada. En el caso de que crea que es **menos** importante en su opinión que la probabilidad inicial (es decir, para usted es un aparato más prescindible que otros), debe seleccionar tantas veces como considere la Opción B, hasta que la probabilidad represente la importancia que le asigna usted a este aparato. 
+            * Tercero, **si** cree que la probabilidad inicial asignada (50% de que funcionará sin problemas- 50% de que no funcionará en ningún caso) **representa lo valioso que es para usted** este aparato, puede clicar en indiferente y avanzar al siguiente. Si, por el contrario, considera que es más importante para usted que funcione fiablemente el aparato en cuestión, debe seleccionar la opción A (para incrementar la probabilidad de que debe funcionar en cualquier caso) tantas veces como crea necesario hasta obtener la probabilidad **P**% deseada. En el caso de que crea que es **menos** importante en su opinión que la probabilidad inicial (es decir, para usted es un aparato más prescindible que otros), debe seleccionar tantas veces como considere la Opción B, hasta que la probabilidad represente la importancia que le asigna usted a este aparato. 
             * Cuarto, cuando la **probabilidad P% represente la importancia que usted le asigna al aparato, debe clicar en Indiferente para avanzar al siguiente aparato**.
 
             A continuación veremos una pantalla de Ejemplo, antes de avanzar al primer aparato.
@@ -783,9 +783,7 @@ def standard_gamble_method():
 
         st.write(
             "Suponga que el dispositivo puede alimentarse pero es "
-            "**POCO FIABLE**: puede apagarse porque a veces consume más potencia "
-            "de la asignada."
-        )
+            "**POCO FIABLE**: puede apagarse por energía insuficiente o por cortes de luz, por ejemplo.")
 
         # Estado interno SG por dispositivo -----------------------------------
         k_min, k_max, k_guess = (f"{device_name}_{s}"
@@ -823,7 +821,7 @@ def standard_gamble_method():
                         unsafe_allow_html=True)
             st.markdown(
                 f"El **{device_name}** funciona **A VECES**: por ejemplo, "
-                "funciona la primera vez que lo necesita pero falla la siguiente, por ejemplo."
+                "funciona la primera vez que lo necesita pero falla la siguiente"
             )
             if st.container().button("Elegir A", key=f"A_{index}",
                                      help="Funciona a veces"):
@@ -1147,6 +1145,24 @@ def pairwise_method():                                     #We start the method
 # Final save / navigation helpers                                              #
 ################################################################################
 
+# --------------------------------Página “gracias” --------------------------------
+THANK_YOU_PAGE = 120 
+
+def thank_you_page() -> None:
+    """Mensaje final para el encuestado."""
+    st.markdown(
+        """
+        <h1 style='text-align:center; font-size:3rem; margin-top:3rem;'>
+            ¡Gracias por participar!
+        </h1>
+        <h3 style='text-align:center; font-weight:normal; margin-top:2rem;'>
+            Ya puede cerrar esta ventana.
+        </h3>
+        """,
+        unsafe_allow_html=True,
+    )
+# --------------------------------------------------------------
+
 def finish_current_respondent():
     """
     • Writes one JSON file per respondent to DATA_DIR  
@@ -1191,11 +1207,8 @@ def finish_current_respondent():
         and len(st.session_state.completed_ids) >= target_n
         and not meta.get("finished", False)
     ):
-        meta["finished"] = True
+        meta["finished"] = True                             # ✂️  no code below runs
         save_meta(meta)
-        st.session_state.page_index = 98         # optimisation setup
-        st.rerun()                  # stop here & redraw
-        return                                   # ✂️  no code below runs
 
     # ── clean transient keys ───────────────────────────────────────────────
     for k in list(st.session_state.keys()):
@@ -1207,21 +1220,14 @@ def finish_current_respondent():
     # ── organiser options (only shown while quota not yet met) ─────────────
     st.info("Respondent saved.")
 
-    if st.button("➕  Start next respondent NOW"):
-        st.session_state.this_respondent_id = None
-        st.session_state.page_index = 2          # respondent intro
-    else:
-        st.success(
-            "You can close the browser now and resume later from "
-            "**Survey setup**."
-        )
-        st.session_state.this_respondent_id = None
-        st.session_state.page_index = 0   
+    st.session_state.this_respondent_id = None
+    st.session_state.page_index = THANK_YOU_PAGE
+    st.rerun()   
         
 ################################################################################
 #  Summary page                                                                #
 ################################################################################
-    
+
 def final_summary():
     st.title("All respondents complete!")
     st.write("Survey data collected:")
@@ -1303,14 +1309,10 @@ def run_optimisation(util_dict, power_map, P):
 #Password helper 
 
 def is_admin():
-    """Comprueba si la clave de admin ya está validada en la sesión."""
-    if st.session_state.get("_is_admin"):
-        return True
-    pwd = st.text_input("Contraseña de administrador", type="password")
-    if pwd and pwd == st.secrets["admin"]["password"]:
-        st.session_state["_is_admin"] = True
-        st.rerun()
-    return False
+    """Devuelve True si el usuario ha introducido la contraseña correcta."""
+    pwd_entered = st.session_state.get("admin_pwd", "")
+    stored_pwd  = st.secrets.get("admin", {}).get("password", "")
+    return pwd_entered and pwd_entered == stored_pwd
     
 #-------------------------
 def analytics_page():
@@ -1859,7 +1861,9 @@ def main():
         pairwise_method()
     elif page == 98: 
         optimisation_setup_page()       
-    else: 
+    elif page == THANK_YOU_PAGE:         
+        thank_you_page()
+    else:
         analytics_page()
 
 if __name__ == "__main__":
