@@ -1901,27 +1901,24 @@ def analytics_page():
 ################################################################################
 
 def main():
-    meta = st.session_state.survey_meta       # <- más cómodo
+    meta  = st.session_state.survey_meta
+    page  = st.session_state.page_index        # valor actual
 
-    # si no hay equipos definidos ⇒ ir a página 1
-    if "facility_devices" not in meta:
-        st.session_state.page_index = 1
+    # ── redirecciones automáticas ──────────────────────────────────────────
+    if page == 0 and "target_n" in meta:                       # tamaño muestral OK
+        if not meta.get("facility_devices"):                   # aún sin dispositivos
+            st.session_state.page_index = 1
+            page = 1
+        else:                                                  # todo configurado
+            st.session_state.page_index = 2
+            page = 2
 
-    page = st.session_state.page_index
-
-    if page == 0:
-        survey_setup_page()
-    elif page == 1:
-        device_availability_page()
-    elif page == 2:
-        respondent_intro_page()
-    elif page == 5:
-        standard_gamble_method()
-    elif page == 6:
-        pairwise_method()
-    elif page == 98:
-        optimisation_setup_page()
-    elif page == 120:
-        thank_you_page()
-    else:
-        analytics_page()
+    # ── enrutado explícito ─────────────────────────────────────────────────
+    if   page == 0:   survey_setup_page()
+    elif page == 1:   device_availability_page()
+    elif page == 2:   respondent_intro_page()
+    elif page == 5:   standard_gamble_method()
+    elif page == 6:   pairwise_method()
+    elif page == 98:  optimisation_setup_page()
+    elif page == 120: thank_you_page()
+    else:             analytics_page()        # incluye el caso page == 99
