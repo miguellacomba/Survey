@@ -834,7 +834,7 @@ def standard_gamble_method():
                 choice_clicked = "Indifferent"
 
         # -------- Lógica tras la selección -----------------------------------
-         if choice_clicked is None:
+        if choice_clicked is None:
             return  # nada pulsado
 
         if choice_clicked == "Partial":
