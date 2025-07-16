@@ -635,7 +635,7 @@ def respondent_intro_page():
     )
 
     if st.button("Comenzar encuesta"):
-        # empezamos por PC (page_index = 6 según nuestro nuevo flujo)
+        # empezamos por PC
         st.session_state.page_index    = 6
         st.rerun()
 
@@ -1210,9 +1210,12 @@ def finish_current_respondent():
         and len(st.session_state.completed_ids) >= target_n
         and not meta.get("finished", False)
     ):
-        meta["finished"] = True                             # ✂️  no code below runs
+        meta["finished"] = True
         save_meta(meta)
-
+        st.session_state.page_index = 98         # optimisation setup
+        st.rerun()                  # stop here & redraw
+        return                                   # ✂️  no code below runs
+        
     # ── clean transient keys ───────────────────────────────────────────────
     for k in list(st.session_state.keys()):
         if k.endswith(("_sg", "_pc", "_es")) or k in {
