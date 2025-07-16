@@ -668,7 +668,7 @@ def standard_gamble_method():
             * Primero, ver de qué dispositivo se trata.
             * Segundo, pensar qué tan importante es para usted. 
             * Tercero, **si** cree que la probabilidad inicial asignada (50% de que funcionará sin problemas- 50% de que no funcionará en ningún caso) **representa lo valioso que es para usted** este aparato, puede clicar en indiferente y avanzar al siguiente aparato. Si, por el contrario, considera que es más importante para usted que funcione el aparato en cuestión, debe seleccionar la opción A (para incrementar la probabilidad de que debe funcionar en cualquier caso) tantas veces como crea necesario hasta obtener la probabilidad **P**% deseada. En el caso de que crea que es **menos** importante en su opinión que la probabilidad inicial (es decir, para usted es un aparato más prescindible que otros), debe seleccionar tantas veces como considere la Opción B, hasta que la probabilidad represente la importancia que le asigna usted a este aparato. 
-            * Cuarto, cuando la **probabilidad P% represente la importancia que usted le asigna al aparato, debe clicar en Indiferente para avanzar al siguiente aparato.**.
+            * Cuarto, cuando la **probabilidad P% represente la importancia que usted le asigna al aparato, debe clicar en Indiferente para avanzar al siguiente aparato**.
 
             A continuación veremos una pantalla de Ejemplo, antes de avanzar al primer aparato.
             
@@ -676,7 +676,7 @@ def standard_gamble_method():
             unsafe_allow_html=True,
         )
 
-        st.markdown("**Cuando esté listo/a, haz clic en el botón para empezar.**")
+        st.markdown("**Cuando esté listo/a, haga clic en el botón para empezar.**")
 
         if st.button("Ver ejemplo"):
             st.session_state.page_index_sg = -1   # ← demo page
@@ -693,7 +693,7 @@ def standard_gamble_method():
         demo_dev = "Dispositivo de ejemplo"
         st.title("Ejemplo de pregunta")
         st.markdown(
-            f"Imagina que el **{demo_dev}** puede recibir energía de forma poco fiable."
+            f"Imagine que el **{demo_dev}** puede recibir energía de forma poco fiable."
         )
         # Reutilizamos la misma UI que en las preguntas reales:
         dummy_res = sg_interactive_core(demo_dev, store_answer=False)
@@ -756,12 +756,12 @@ def standard_gamble_method():
             rid = st.session_state.this_respondent_id
             st.session_state.responses_sg.setdefault(rid, {})[device_name] = p_guess * 100
             st.session_state.page_index_sg += 1   # siguiente dispositivo
-            st.experimental_rerun()
+            st.rerun()
             return
 
         # recalcular nuevo punto medio y recargar la página
         st.session_state[k_guess] = (st.session_state[k_min] + st.session_state[k_max]) / 2
-        st.experimental_rerun()
+        st.rerun()
         
 # ----------------------------------- Device Page (one per page) ---------------------------------
     
@@ -782,7 +782,7 @@ def standard_gamble_method():
         st.markdown(f"### {badge}  **{device_name}**")
 
         st.write(
-            "Supón que el dispositivo puede alimentarse pero es "
+            "Suponga que el dispositivo puede alimentarse pero es "
             "**POCO FIABLE**: puede apagarse porque a veces consume más potencia "
             "de la asignada."
         )
@@ -823,7 +823,7 @@ def standard_gamble_method():
                         unsafe_allow_html=True)
             st.markdown(
                 f"El **{device_name}** funciona **A VECES**: por ejemplo, "
-                "funciona la primera vez que lo necesitas pero falla la siguiente."
+                "funciona la primera vez que lo necesita pero falla la siguiente, por ejemplo."
             )
             if st.container().button("Elegir A", key=f"A_{index}",
                                      help="Funciona a veces"):
@@ -846,7 +846,7 @@ def standard_gamble_method():
         with colC:
             st.markdown("### <span style='color:#AAAAAA;'>Indiferente</span>",
                         unsafe_allow_html=True)
-            st.write("Aceptarías *cualquiera* de las dos opciones con estas probabilidades.")
+            st.write("Aceptaría *cualquiera* de las dos opciones con estas probabilidades.")
             if st.container().button("Indiferente", key=f"C_{index}"):
                 choice_clicked = "Indifferent"
 
@@ -885,7 +885,7 @@ def standard_gamble_method():
             for dev, util in sorted_pairs:
                 st.write(f"• {dev}: {util:.3f}")
 
-        if st.button("Has terminado la encuesta. ¡Gracias!"):
+        if st.button("Ha terminado la encuesta. ¡Gracias!"):
             # Reiniciar para la siguiente persona encuestada
             st.session_state.page_index_sg = 0
             for dev in dev_load_map:
@@ -1006,7 +1006,7 @@ def pairwise_method():                                     #We start the method
         st.markdown(
             """
             ¡Bienvenido/a al método de **_Comparación por Pares (PC)_**!  
-            Aquí elegirás repetidamente cuál de **dos dispositivos** es más importante.
+            Aquí elegirá repetidamente cuál de **dos dispositivos** es más importante para usted.
 
             ### 🌩️ Contexto
             * El centro no puede alimentar todos los dispositivos a la vez.
@@ -1024,7 +1024,7 @@ def pairwise_method():                                     #We start the method
             unsafe_allow_html=True,
         )
 
-        st.markdown("Cuando estés listo/a, haz clic en el botón ¡Empecemos!")
+        st.markdown("Cuando esté listo/a, haga clic en el botón ¡Empecemos!")
 
         if st.button("Comenzar comparación"):
             st.session_state["wins_pc"]          = {d: set() for d in dev_load_map}
@@ -1067,7 +1067,7 @@ def pairwise_method():                                     #We start the method
         if pair is None:
             st.write(
                 "No hay más pares. Todas las comparaciones están resueltas o deducidas. "
-                "Esta es tu clasificación:"
+                "Esta es su clasificación:"
             )
             show_final_ranking(st.session_state["wins_pc"])
 
@@ -1089,8 +1089,8 @@ def pairwise_method():                                     #We start the method
         else:
             A, B = pair
             preference = st.radio(
-                f"Si solo pudieras disponer de **uno** de estos dos dispositivos: "
-                f"**{A}** o **{B}**, funcionando en tu centro, ¿cuál elegirías?",
+                f"Si solo pudiera disponer de **uno** de estos dos dispositivos: "
+                f"**{A}** o **{B}**, funcionando en su centro, ¿cuál elegiría?",
                 [A, B],
             )
 
