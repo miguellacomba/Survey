@@ -1214,7 +1214,7 @@ def finish_current_respondent():
         save_meta(meta)
 #        st.session_state.page_index = 98         # optimisation setup
 #        st.rerun()                  # stop here & redraw
-        return                                   # ✂️  no code below runs
+                                   # ✂️  no code below runs
         
     # ── clean transient keys ───────────────────────────────────────────────
     for k in list(st.session_state.keys()):
@@ -1326,16 +1326,24 @@ def analytics_page():
 
     if not is_admin():
         st.subheader("🔐 Acceso a analytics")
-        st.text_input(
+
+        pwd_try = st.text_input(
             "Introduce la contraseña de analytics:",
             type="password",
-            key="admin_pwd",
-            on_change=st.rerun   # recarga al teclear
+            key="pwd_try"                # clave temporal
         )
-        st.stop()
+
+        if st.button("Entrar"):
+            # Guardamos el intento en session_state
+            st.session_state.admin_pwd = pwd_try
+
+            if is_admin():               # correcto → recargar página
+                st.experimental_rerun()
+            else:                        # incorrecto → mensaje de error
+                st.error("❌ Contraseña incorrecta")
+
+        st.stop()        # corta aquí hasta que la clave sea válida
         
-    if not is_admin():
-        st.stop()  
     else:
         # 1.  Always load the latest JSONs from disk
         st.session_state.survey_data = load_all_responses()
