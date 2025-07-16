@@ -1862,23 +1862,8 @@ def main():
         6  → PC
         5  → SG
       120  → “gracias”
-    
-    Cuando **target_n** ya exista:
-        • si NO hay lista de dispositivos definida ⇒ ir a 1
-        • si SÍ la hay                            ⇒ ir a 2
     """
-
-    meta  = st.session_state.survey_meta
     page  = st.session_state.page_index        # valor actual
-
-    # ── redirecciones automáticas ──────────────────────────────────────────
-    if page == 0 and "target_n" in meta:                       # tamaño muestral OK
-        if not meta.get("facility_devices"):                   # aún sin dispositivos
-            st.session_state.page_index = 1
-            page = 1
-        else:                                                  # todo configurado
-            st.session_state.page_index = 2
-            page = 2
 
     # ── enrutado explícito ─────────────────────────────────────────────────
     if   page == 0:   survey_setup_page()
