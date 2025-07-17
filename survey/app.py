@@ -1192,27 +1192,33 @@ def finish_current_respondent():
 
     rid = st.session_state.this_respondent_id.strip()
 
-    def push_to_github():
-        token  = os.environ["GH_TOKEN"]           # ①
+    def push_to_github(rid: str):
+        from git.exc import InvalidGitRepositoryError
     
-        repo = git.Repo(str(SCRIPT_DIR))          # ② raíz del repo local
+        token  = os.environ["GH_TOKEN"]
+        remote_url = f"https://{token}@github.com/miguellacomba/Survey.git"  # 👈 cambia esto
     
-        # ③ añade los JSON nuevos/modificados
+        # 1) Abre repo o créalo
+        try:
+            repo = git.Repo(SCRIPT_DIR, search_parent_directories=True)
+        except InvalidGitRepositoryError:
+            repo = git.Repo.init(SCRIPT_DIR)                 # repo nuevo sin historial
+            repo.create_remote("origin", remote_url)
+    
+        # 2) Añade los JSON y las imágenes
         json_files = [str(p.relative_to(SCRIPT_DIR))
                       for p in DATA_DIR.glob("*.json")]
-        repo.index.add(json_files)
+        img_files  = [str(p.relative_to(SCRIPT_DIR))
+                      for p in OUTDIR.glob("*.[ps][nv]g")]
+        repo.index.add(json_files + img_files)
     
-        # ④ commit
+        # 3) Commit
         repo.index.commit(
-            f"add respondent {rid} ({datetime.utcnow():%Y-%m-%d %H:%M})"
+            f"data: respondent {rid} ({datetime.utcnow():%Y-%m-%d %H:%M})"
         )
     
-        # ⑤ remote con autentificación por token
-        origin = repo.remote("origin")
-        origin.set_url(
-            f"https://{token}@github.com/miguellacomba/Survey.git"
-        )
-        origin.push() 
+        # 4) Push (a rama “data” para no pisar main)
+        repo.git.push("--set-upstream", "origin", "HEAD:data", force=True)
     
         # ---------- build record ------------------------------------------------
     record = {
@@ -1239,7 +1245,7 @@ def finish_current_respondent():
     st.session_state.completed_ids.add(rid)
     st.session_state.survey_data.append(record)
 
-    push_to_github()
+    push_to_github(rid)
 
     png_svg = [str(p.relative_to(SCRIPT_DIR))
            for p in OUTDIR.glob("*.[ps][nv]g")]
