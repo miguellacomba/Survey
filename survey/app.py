@@ -430,20 +430,20 @@ def survey_setup_page():
     )
 
     if meta.get("finished"):
-        st.success("¡Todos los participantes han terminado!")
-    
         needs_opt_setup = (
             meta.get("max_power") is None or meta.get("utility_source") is None
         )
-    
+
         if needs_opt_setup:
-            if st.button("Configurar optimización"):
-                st.session_state.page_index = 98
-                st.rerun()
-        else:
-            if st.button("Ir al análisis"):
-                st.session_state.page_index = 99
-                st.rerun()
+            # salto automático para la persona organizadora
+            st.session_state.page_index = 98
+            st.rerun()
+            return
+
+        # parámetros ya están → ir directos a analytics
+        st.session_state.page_index = 99
+        st.rerun()
+        return
     else:
         # Si los dispositivos ya están definidos, saltamos a la intro del encuestado
         next_page = 2 if "facility_devices" in meta else 1
@@ -1222,8 +1222,8 @@ def finish_current_respondent():
     ):
         meta["finished"] = True
         save_meta(meta)
-        st.session_state.page_index = 98         # optimisation setup
-        st.rerun()                  # stop here & redraw
+#        st.session_state.page_index = 98         # optimisation setup
+#        st.rerun()                  # stop here & redraw
                                    # ✂️  no code below runs
         
     # ── clean transient keys ───────────────────────────────────────────────
