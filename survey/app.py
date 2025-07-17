@@ -21,6 +21,9 @@ import json
 import pandas as pd
 import numpy as np
 import altair as alt
+import git
+import os
+
 from datetime import datetime
 from collections import defaultdict
 from pathlib import Path
@@ -199,6 +202,9 @@ if "utility_source" not in st.session_state:     # "PC", "SG", or "Average"
 
 if "ids" not in st.session_state:
     st.session_state.ids = []            # will grow with .append()
+
+if "GH_TOKEN" not in os.environ and "GH_TOKEN" in st.secrets:
+    os.environ["GH_TOKEN"] = st.secrets["GH_TOKEN"]
 
 ######################################################################
 #  Global look & feel – bump all fonts up
@@ -1187,12 +1193,26 @@ def finish_current_respondent():
     rid = st.session_state.this_respondent_id.strip()
 
     def push_to_github():
-        repo = git.Repo(str(SCRIPT_DIR))             # raíz de tu repo
-        repo.git.add(str(DATA_DIR / "*.json"))
-        repo.index.commit(f"add respondent {rid} ({datetime.utcnow():%Y-%m-%d %H:%M})")
+        token  = os.environ["GH_TOKEN"]           # ①
+    
+        repo = git.Repo(str(SCRIPT_DIR))          # ② raíz del repo local
+    
+        # ③ añade los JSON nuevos/modificados
+        json_files = [str(p.relative_to(SCRIPT_DIR))
+                      for p in DATA_DIR.glob("*.json")]
+        repo.index.add(json_files)
+    
+        # ④ commit
+        repo.index.commit(
+            f"add respondent {rid} ({datetime.utcnow():%Y-%m-%d %H:%M})"
+        )
+    
+        # ⑤ remote con autentificación por token
         origin = repo.remote("origin")
-        origin.set_url(f"https://{os.environ['GH_TOKEN']}@github.com/<usuario>/<repo>.git")
-        origin.push()
+        origin.set_url(
+            f"https://{token}@github.com/<USUARIO>/<REPO>.git"
+        )
+        origin.push() 
     
         # ---------- build record ------------------------------------------------
     record = {
@@ -1220,6 +1240,11 @@ def finish_current_respondent():
     st.session_state.survey_data.append(record)
 
     push_to_github()
+
+    png_svg = [str(p.relative_to(SCRIPT_DIR))
+           for p in OUTDIR.glob("*.[ps][nv]g")]
+    
+    repo.index.add(png_svg)
 
     # ── quota reached?  jump to optimisation-setup (page 98) ───────────────
     meta = st.session_state.survey_meta
