@@ -1182,42 +1182,41 @@ def thank_you_page() -> None:
     )
 # --------------------------------------------------------------
 
-def finish_current_respondent():
-#    """
-#    • Writes one JSON file per respondent to DATA_DIR  
-#    • Updates the in-memory list `st.session_state.survey_data`  
-##    • Checks whether the target sample size has been reached; if so,
-#      flips the “finished” flag in survey_meta and jumps to the analytics page.
-#   """
-
-    rid = st.session_state.this_respondent_id.strip()
-
     def push_to_github(rid: str):
+        import os, git
         from git.exc import InvalidGitRepositoryError
     
-        token  = os.environ["GH_TOKEN"]
-        remote_url = f"https://{token}@github.com/miguellacomba/Survey.git"  # 👈 cambia esto
+        # 0) Token & URL ----------------------------------------------------------------
+        token = os.environ.get("GH_TOKEN") or st.secrets["GH_TOKEN"]
+        remote_url = f"https://{token}@github.com/<USUARIO>/<REPO>.git"   # ← cambia
     
-        # 1) Abre repo o créalo
+        # 1) Repo local (créalo si no existe) ------------------------------------------
         try:
             repo = git.Repo(SCRIPT_DIR, search_parent_directories=True)
         except InvalidGitRepositoryError:
-            repo = git.Repo.init(SCRIPT_DIR)                 # repo nuevo sin historial
+            repo = git.Repo.init(SCRIPT_DIR)
             repo.create_remote("origin", remote_url)
     
-        # 2) Añade los JSON y las imágenes
-        json_files = [str(p.relative_to(SCRIPT_DIR))
-                      for p in DATA_DIR.glob("*.json")]
-        img_files  = [str(p.relative_to(SCRIPT_DIR))
-                      for p in OUTDIR.glob("*.[ps][nv]g")]
-        repo.index.add(json_files + img_files)
+        # 2) Ficheros que queremos subir ------------------------------------------------
+        json_files = list((DATA_DIR).glob("*.json"))
+        img_files  = list((OUTDIR).glob("*.[ps][nv]g"))   # png / svg
     
-        # 3) Commit
-        repo.index.commit(
-            f"data: respondent {rid} ({datetime.utcnow():%Y-%m-%d %H:%M})"
-        )
+        # 👉 convertir a rutas *relativas* y filtrar las que existan
+        paths = [
+            str(p.relative_to(SCRIPT_DIR))
+            for p in json_files + img_files
+            if p.exists()
+        ]
+        if not paths:          # nada que subir
+            return
     
-        # 4) Push (a rama “data” para no pisar main)
+        # 3) Añadir + commit sólo si hay cambios ---------------------------------------
+        repo.index.add(paths)
+        if repo.is_dirty():
+            repo.index.commit(
+                f"data: respondent {rid} ({datetime.utcnow():%Y-%m-%d %H:%M})"
+            )
+            # 4) Push a rama 'data'
         repo.git.push("--set-upstream", "origin", "HEAD:data", force=True)
     
         # ---------- build record ------------------------------------------------
