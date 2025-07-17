@@ -1210,7 +1210,7 @@ def finish_current_respondent():
         # ⑤ remote con autentificación por token
         origin = repo.remote("origin")
         origin.set_url(
-            f"https://{token}@github.com/<USUARIO>/<REPO>.git"
+            f"https://{token}@github.com/miguellacomba/Survey.git"
         )
         origin.push() 
     
