@@ -1185,6 +1185,14 @@ def finish_current_respondent():
 #   """
 
     rid = st.session_state.this_respondent_id.strip()
+
+    def push_to_github():
+        repo = git.Repo(str(SCRIPT_DIR))             # raíz de tu repo
+        repo.git.add(str(DATA_DIR / "*.json"))
+        repo.index.commit(f"add respondent {rid} ({datetime.utcnow():%Y-%m-%d %H:%M})")
+        origin = repo.remote("origin")
+        origin.set_url(f"https://{os.environ['GH_TOKEN']}@github.com/<usuario>/<repo>.git")
+        origin.push()
     
         # ---------- build record ------------------------------------------------
     record = {
@@ -1210,6 +1218,8 @@ def finish_current_respondent():
     # ── update in-session data ─────────────────────────────────────────────
     st.session_state.completed_ids.add(rid)
     st.session_state.survey_data.append(record)
+
+    push_to_github()
 
     # ── quota reached?  jump to optimisation-setup (page 98) ───────────────
     meta = st.session_state.survey_meta
