@@ -3,7 +3,7 @@
 
 #A page index drives the navigation flow:
 
-#    0 → survey setup                        
+#    0 → survey setup
 #    1 → device availability
 #    2 → respondent intro
 #    6 → Pairwise Comparison
@@ -251,6 +251,8 @@ META_FILE     = DATA_DIR / "survey_meta.json" # holds target_n & finished flag
 
 DATA_DIR.mkdir(exist_ok=True)
 
+FILES_TO_PUSH: list[Path] = []
+
 # ───────────────────────── Git repo root ─────────────────────────
 try:
     REPO_ROOT = Path(
@@ -296,6 +298,9 @@ if "survey_meta" not in st.session_state:
     st.session_state.survey_meta  = load_meta() or {}          # may be empty
 
 meta = st.session_state.survey_meta
+
+st.write("DEBUG – REPO_ROOT =", REPO_ROOT)
+st.write("DEBUG – GH_TOKEN presente =", bool(os.getenv("GH_TOKEN")))
 
 ##############################################################################
 #  Enrutado automático al arrancar                                           #
@@ -1238,13 +1243,19 @@ def push_to_github(files: list[Path], rid: str):
     repo.index.add(rels)
     repo.index.commit(f"Add survey response {rid}")
 
+    branch = "miguel"
     remote_url = (
         f"https://{token}:x-oauth-basic@github.com/miguellacomba/Survey.git"
     )
 
-    # push a la rama main (cámbiala si usas otra)
+    # Asegúrate de tener la última versión remota antes de empujar
     with repo.git.custom_environment(GIT_ASKPASS="echo"):
-        repo.git.push(remote_url, "HEAD:main")
+        try:
+            repo.git.pull(remote_url, branch, "--rebase")
+        except git.exc.GitCommandError:
+            # si la rama no existe aún, no pasa nada
+            pass
+        repo.git.push(remote_url, f"HEAD:{branch}")
 
 def finish_current_respondent():
     """
@@ -1282,8 +1293,9 @@ def finish_current_respondent():
     st.session_state.survey_data.append(record)
 
     # ---------- escribir al repo & push --------------------------------
-    created = write_files(rid, record)          # obtiene lista de paths
+    created = write_files(rid, record) + FILES_TO_PUSH   # JSON + gráficos
     push_to_github(created, rid)
+    FILES_TO_PUSH.clear() 
 
     # ── quota reached?  jump to optimisation-setup (page 98) ───────────────
     meta = st.session_state.survey_meta
@@ -1340,10 +1352,15 @@ OUTDIR = Path("outputs")
 OUTDIR.mkdir(exist_ok=True)
 
 def save_chart(chart: alt.Chart, stem: str):
-    png = OUTDIR / f"{stem}.png"
-    svg = OUTDIR / f"{stem}.svg"
+    charts_dir = REPO_ROOT / "charts"   # <repo>/charts/…
+    charts_dir.mkdir(exist_ok=True)
+    png = charts_dir / f"{stem}.png"
+    svg = charts_dir / f"{stem}.svg"
+#    png = OUTDIR / f"{stem}.png"
+#    svg = OUTDIR / f"{stem}.svg"
     chart.save(png, scale=2, engine="vl-convert")   # tell Altair which backend
     chart.save(svg, engine="vl-convert")
+    FILES_TO_PUSH.extend([png, svg]) 
 
 def knapsack_dp(weights, values, capacity):
     """0-1 knapsack via dynamic programming – returns a 0/1 list."""
