@@ -3,7 +3,7 @@
 
 #A page index drives the navigation flow:
 
-#    0 → survey setup
+#    0 → survey setup                        
 #    1 → device availability
 #    2 → respondent intro
 #    6 → Pairwise Comparison
