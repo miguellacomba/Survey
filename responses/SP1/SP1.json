@@ -4,21 +4,21 @@
     "SG": {
       "utility": {
         "Cocina el\u00e9ctrica": 62.5,
-        "Refrigerador solar para vacunas": 37.5,
+        "Refrigerador solar para vacunas": 75.0,
         "Ec\u00f3grafo": 56.25,
-        "Concentrador de ox\u00edgeno": 43.75,
-        "Ollas el\u00e9ctricas": 59.375,
-        "L\u00e1mpara de cuello de cisne": 81.25
+        "Concentrador de ox\u00edgeno": 12.5,
+        "Ollas el\u00e9ctricas": 87.5,
+        "L\u00e1mpara de cuello de cisne": 59.375
       }
     },
     "PC": {
       "utility": {
-        "Ec\u00f3grafo": 100.0,
-        "Ollas el\u00e9ctricas": 80.02000000000001,
-        "Concentrador de ox\u00edgeno": 60.04,
+        "Concentrador de ox\u00edgeno": 100.0,
+        "Cocina el\u00e9ctrica": 80.02000000000001,
+        "Ec\u00f3grafo": 60.04,
         "L\u00e1mpara de cuello de cisne": 40.06000000000001,
-        "Cocina el\u00e9ctrica": 20.080000000000005,
-        "Refrigerador solar para vacunas": 0.1
+        "Refrigerador solar para vacunas": 20.080000000000005,
+        "Ollas el\u00e9ctricas": 0.1
       }
     }
   }
