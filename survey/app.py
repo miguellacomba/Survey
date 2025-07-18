@@ -1965,6 +1965,14 @@ def analytics_page():
     
         bundle_summary("Relaxed-LP", "LP_pick", "#1f77b4")      # blue
         bundle_summary("0-1 DP",    "DP_pick", "#ff7f0e")       # orange
+
+
+        if FILES_TO_PUSH:
+            push_to_github(
+                FILES_TO_PUSH,
+                rid="analytics_" + datetime.utcnow().strftime("%Y%m%dT%H%M%S")
+            )
+        FILES_TO_PUSH.clear()
     
         if st.button("Change optimisation parameters"):
             st.session_state.page_index = 98
