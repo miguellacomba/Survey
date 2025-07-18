@@ -1188,7 +1188,7 @@ def thank_you_page() -> None:
     
         # 0) Token & URL ----------------------------------------------------------------
         token = os.environ.get("GH_TOKEN") or st.secrets["GH_TOKEN"]
-        remote_url = f"https://{token}@github.com/<USUARIO>/<REPO>.git"   # ← cambia
+        remote_url = f"https://{token}@github.com/miguellacomba/Survey/survey.git"   
     
         # 1) Repo local (créalo si no existe) ------------------------------------------
         try:
