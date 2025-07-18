@@ -33,9 +33,7 @@ import matplotlib.pyplot as plt
 from itertools import combinations
 from adjustText import adjust_text
 
-# repo_root is `<mount>/src`, no matter where the main script lives
-REPO_ROOT = Path(__file__).resolve().parents[2]   # adjust `2` if the depth changes
-repo = git.Repo(REPO_ROOT, search_parent_directories=True)
+
 
 ################################################################################
 #  Global constants                                                            #
@@ -252,6 +250,17 @@ RESP_PATTERN  = "respondent_{rid}.json"       # one file per respondent
 META_FILE     = DATA_DIR / "survey_meta.json" # holds target_n & finished flag
 
 DATA_DIR.mkdir(exist_ok=True)
+
+# ───────────────────────── Git repo root ─────────────────────────
+try:
+    REPO_ROOT = Path(
+        git.Repo(
+            Path(__file__).resolve(),      # parte desde este archivo
+            search_parent_directories=True
+        ).working_tree_dir
+    )
+except git.exc.InvalidGitRepositoryError:
+    REPO_ROOT = None          # la app se ejecuta fuera de un repo → desactiva push
 
 st.write(f"Using DATA_DIR = {DATA_DIR}")
 
@@ -1187,6 +1196,56 @@ def thank_you_page() -> None:
     )
 # --------------------------------------------------------------
 
+def write_files(rid: str, record: dict) -> list[Path]:
+    """
+    Escribe el JSON (y las figuras, si quieres) en
+        <repo>/responses/<rid>/…
+    Devuelve la lista de ficheros creados.
+    """
+    if REPO_ROOT is None:      # sin repo → solo guarda en /tmp
+        folder = DATA_DIR / "responses" / rid
+    else:
+        folder = REPO_ROOT / "responses" / rid
+
+    folder.mkdir(parents=True, exist_ok=True)
+
+    json_path = folder / f"{rid}.json"
+    json_path.write_text(json.dumps(record, indent=2))
+
+    # Ejemplo si guardases una imagen:
+    # img_path = folder / f"{rid}_chart.png"
+    # fig.savefig(img_path)
+    # return [json_path, img_path]
+
+    return [json_path]
+
+def push_to_github(files: list[Path], rid: str):
+    """
+    Añade + commitea + pushea las rutas dadas con el token GH_TOKEN.
+    Si no hay repo o token, hace nada.
+    """
+    if REPO_ROOT is None:
+        st.warning("⚠️  No Git repo found → no se hace push.")
+        return
+
+    token = os.getenv("GH_TOKEN")
+    if not token:
+        st.warning("⚠️  GH_TOKEN no está definido en secrets → no se hace push.")
+        return
+
+    repo = git.Repo(REPO_ROOT)
+    rels = [str(p.relative_to(REPO_ROOT)) for p in files]
+    repo.index.add(rels)
+    repo.index.commit(f"Add survey response {rid}")
+
+    remote_url = (
+        f"https://{token}:x-oauth-basic@github.com/miguellacomba/Survey.git"
+    )
+
+    # push a la rama main (cámbiala si usas otra)
+    with repo.git.custom_environment(GIT_ASKPASS="echo"):
+        repo.git.push(remote_url, "HEAD:main")
+
 def finish_current_respondent():
     """
     • Writes one JSON file per respondent to DATA_DIR  
@@ -1196,42 +1255,6 @@ def finish_current_respondent():
     """
 
     rid = st.session_state.this_respondent_id.strip()
-    def push_to_github(rid: str):
-        import os, git
-        from git.exc import InvalidGitRepositoryError
-    
-        # 0) Token & URL ----------------------------------------------------------------
-        token = os.environ.get("GH_TOKEN") or st.secrets["GH_TOKEN"]
-        remote_url = f"https://{token}@github.com/miguellacomba/Survey/survey.git"   
-    
-        # 1) Repo local (créalo si no existe) ------------------------------------------
-        try:
-            repo = git.Repo(SCRIPT_DIR, search_parent_directories=True)
-        except InvalidGitRepositoryError:
-            repo = git.Repo.init(SCRIPT_DIR)
-            repo.create_remote("origin", remote_url)
-    
-        # 2) Ficheros que queremos subir ------------------------------------------------
-        json_files = list((DATA_DIR).glob("*.json"))
-        img_files  = list((OUTDIR).glob("*.[ps][nv]g"))   # png / svg
-    
-        # 👉 convertir a rutas *relativas* y filtrar las que existan
-        paths = [
-            str(p.relative_to(SCRIPT_DIR))
-            for p in json_files + img_files
-            if p.exists()
-        ]
-        if not paths:          # nada que subir
-            return
-    
-        # 3) Añadir + commit sólo si hay cambios ---------------------------------------
-        repo.index.add(paths)
-        if repo.is_dirty():
-            repo.index.commit(
-                f"data: respondent {rid} ({datetime.utcnow():%Y-%m-%d %H:%M})"
-            )
-            # 4) Push a rama 'data'
-        repo.git.push("--set-upstream", "origin", "HEAD:data", force=True)
     
         # ---------- build record ------------------------------------------------
     record = {
@@ -1250,20 +1273,17 @@ def finish_current_respondent():
         }
     }
 
-# ---------- save to a respondent-specific file --------------------------
+    # ---------- guardar a disco (carpeta survey_data local -------------
     out_path = DATA_DIR / RESP_PATTERN.format(rid=rid)
     out_path.write_text(json.dumps(record, indent=2))
 
-    # ── update in-session data ─────────────────────────────────────────────
+    # ---------- registrar en memoria -----------------------------------
     st.session_state.completed_ids.add(rid)
     st.session_state.survey_data.append(record)
 
-    push_to_github(rid)
-
-    png_svg = [str(p.relative_to(SCRIPT_DIR))
-           for p in OUTDIR.glob("*.[ps][nv]g")]
-    
-    repo.index.add(png_svg)
+    # ---------- escribir al repo & push --------------------------------
+    created = write_files(rid, record)          # obtiene lista de paths
+    push_to_github(created, rid)
 
     # ── quota reached?  jump to optimisation-setup (page 98) ───────────────
     meta = st.session_state.survey_meta
