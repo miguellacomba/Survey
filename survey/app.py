@@ -23,6 +23,7 @@ import numpy as np
 import altair as alt
 import git
 import os
+import subprocess
 
 from datetime import datetime
 from collections import defaultdict
@@ -31,6 +32,10 @@ from scipy.optimize import linprog
 import matplotlib.pyplot as plt 
 from itertools import combinations
 from adjustText import adjust_text
+
+# repo_root is `<mount>/src`, no matter where the main script lives
+REPO_ROOT = Path(__file__).resolve().parents[2]   # adjust `2` if the depth changes
+repo = git.Repo(REPO_ROOT, search_parent_directories=True)
 
 ################################################################################
 #  Global constants                                                            #
@@ -1182,6 +1187,15 @@ def thank_you_page() -> None:
     )
 # --------------------------------------------------------------
 
+def finish_current_respondent():
+    """
+    • Writes one JSON file per respondent to DATA_DIR  
+    • Updates the in-memory list `st.session_state.survey_data`  
+    • Checks whether the target sample size has been reached; if so,
+      flips the “finished” flag in survey_meta and jumps to the analytics page.
+    """
+
+    rid = st.session_state.this_respondent_id.strip()
     def push_to_github(rid: str):
         import os, git
         from git.exc import InvalidGitRepositoryError
@@ -1371,7 +1385,9 @@ def is_admin():
         or st.secrets.get("password", "")               # luego en raíz
     )
     return pwd_entered and pwd_entered == stored_pwd
-    
+
+
+
 #-------------------------
 def analytics_page():
     st.title("📊 Survey analytics")
