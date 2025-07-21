@@ -777,10 +777,7 @@ def standard_gamble_method():
                 choice_clicked = "Partial"
         with colB:
             st.markdown("### <span style='color:#FF5733;'>Opción B</span>", unsafe_allow_html=True)
-            st.markdown(f"**LOTERÍA:** **{p_guess*100:.0f}%** de probabilidad de que el "
-                f"dispositivo funcione de forma fiable **todo el día**, y "
-                f"**{(1-p_guess)*100:.0f}%** de que **NO funcione** en ningún momento.
-                ")
+            st.markdown(f"**LOTERÍA:** **{p_guess*100:.0f}%** de probabilidad de que el "f"dispositivo funcione de forma fiable **todo el día**, y "f"**{(1-p_guess)*100:.0f}%** de que **NO funcione** en ningún momento.")
             if st.container().button("Considero que es menos importante, quiero **BAJAR** ↓ la probabilidad P%", key=f"B_{device_name}"):
                 choice_clicked = "Lottery"
         with colC:
