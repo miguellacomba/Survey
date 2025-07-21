@@ -3,22 +3,54 @@
   "Methods": {
     "SG": {
       "utility": {
-        "Cocina el\u00e9ctrica": 75.0,
-        "Refrigerador solar para vacunas": 25.0,
-        "Ec\u00f3grafo": 62.5,
-        "Concentrador de ox\u00edgeno": 37.5,
+        "Cocina el\u00e9ctrica": 50.0,
+        "Refrigerador solar para vacunas": 87.5,
+        "Ec\u00f3grafo": 75.0,
+        "Concentrador de ox\u00edgeno": 93.75,
         "Ollas el\u00e9ctricas": 50.0,
-        "L\u00e1mpara de cuello de cisne": 40.625
+        "Proyector de v\u00eddeo": 12.5,
+        "Electrocardi\u00f3grafo": 93.75,
+        "Nebulizador": 75.0,
+        "Unidad dental": 50.0,
+        "Refrigerador": 50.0,
+        "Camilla el\u00e9ctrica": 50.0,
+        "Aspirador de secreciones": 75.0,
+        "Esterilizador": 75.0,
+        "Bomba de infusi\u00f3n": 75.0,
+        "Monitor de signos vitales": 87.5,
+        "Compresor de aire": 87.5,
+        "Ordenador de sobremesa": 12.5,
+        "Port\u00e1til": 12.5,
+        "Conexi\u00f3n a Internet": 75.0,
+        "Impresora": 12.5,
+        "Aire acondicionado": 50.0,
+        "Iluminaci\u00f3n": 75.0
       }
     },
     "PC": {
       "utility": {
         "Concentrador de ox\u00edgeno": 100.0,
-        "Refrigerador solar para vacunas": 80.02000000000001,
-        "Ec\u00f3grafo": 60.04,
-        "Cocina el\u00e9ctrica": 40.06000000000001,
-        "Ollas el\u00e9ctricas": 20.080000000000005,
-        "L\u00e1mpara de cuello de cisne": 0.1
+        "Monitor de signos vitales": 95.24285714285713,
+        "Refrigerador": 90.48571428571428,
+        "Compresor de aire": 85.72857142857143,
+        "Refrigerador solar para vacunas": 80.97142857142858,
+        "Electrocardi\u00f3grafo": 76.21428571428571,
+        "Esterilizador": 71.45714285714286,
+        "Ec\u00f3grafo": 66.69999999999999,
+        "Conexi\u00f3n a Internet": 61.94285714285715,
+        "Nebulizador": 57.18571428571429,
+        "Aspirador de secreciones": 52.42857142857144,
+        "Aire acondicionado": 47.67142857142857,
+        "Unidad dental": 42.91428571428572,
+        "Iluminaci\u00f3n": 38.15714285714286,
+        "Camilla el\u00e9ctrica": 33.4,
+        "Bomba de infusi\u00f3n": 28.642857142857146,
+        "Ordenador de sobremesa": 23.885714285714286,
+        "Cocina el\u00e9ctrica": 19.12857142857143,
+        "Ollas el\u00e9ctricas": 14.371428571428572,
+        "Port\u00e1til": 9.614285714285714,
+        "Impresora": 4.857142857142857,
+        "Proyector de v\u00eddeo": 0.1
       }
     }
   }
