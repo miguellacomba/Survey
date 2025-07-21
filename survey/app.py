@@ -232,7 +232,7 @@ def set_global_font(base_px: int = 18) -> None:
 
             /* make widget-labels a bit larger too */
             label, .stRadio > label, .stCheckbox > label,
-            .stTextInput > label, .stSlider > label {{
+            .stTextInput > label, .stSlider > label {{ 
                 font-size: {base_px*1.05}px !important;
             }}
         </style>
@@ -252,7 +252,7 @@ def scroll_to_top():
         </script>
         """,
         height=1,
-        scrolling = False
+        scrolling = False,
         key=f"scroll_{random.randint(1,1_000_000)}"   # clave única → ejecuta siempre
     )
 
