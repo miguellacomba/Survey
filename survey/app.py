@@ -47,24 +47,24 @@ dev_load_map = [
     "Ecógrafo",
     "Concentrador de oxígeno",
     "Ollas eléctricas",
-    "Lámpara de cuello de cisne",
-#   "Proyector de vídeo",
-#   "Electrocardiógrafo",
-#   "Nebulizador",
-#   "Unidad dental",
-#   "Refrigerador",
-#   "Camilla eléctrica",
-#   "Aspirador de secreciones",
-#   "Esterilizador",
-#   "Bomba de infusión",
-#   "Monitor de signos vitales",
-#   "Compresor de aire",
-#   "Ordenador de sobremesa",
-#   "Portátil",
-#   "Conexión a Internet",
-#   "Impresora",
-#   "Aire acondicionado",
-#   "Bombillas",
+#    "Lámpara de cuello de cisne",
+    "Proyector de vídeo",
+    "Electrocardiógrafo",
+    "Nebulizador",
+    "Unidad dental",
+    "Refrigerador",
+    "Camilla eléctrica",
+    "Aspirador de secreciones",
+    "Esterilizador",
+    "Bomba de infusión",
+    "Monitor de signos vitales",
+    "Compresor de aire",
+    "Ordenador de sobremesa",
+    "Portátil",
+    "Conexión a Internet",
+    "Impresora",
+    "Aire acondicionado",
+    "Iluminación",
 ]
 
 power_map = {
@@ -73,24 +73,24 @@ power_map = {
     "Ecógrafo":                         1158,
     "Concentrador de oxígeno":          1180,
     "Ollas eléctricas":                 4000,
-    "Lámpara de cuello de cisne":        672,
-#   "Proyector de vídeo":                 32.5,
-#   "Electrocardiógrafo":                 17.5,
-#   "Nebulizador":                       120,
-#   "Unidad dental":                    7200,
-#   "Refrigerador":                      576,
-#   "Camilla eléctrica":                 720,
-#   "Aspirador de secreciones":          220,
-#   "Esterilizador":                    6000,
-#   "Bomba de infusión":                 200,
-#   "Monitor de signos vitales":        1200,
-#   "Compresor de aire":                5840,
-#   "Ordenador de sobremesa":            720,
-#   "Portátil":                          180,
-#   "Conexión a Internet":               288,
-#   "Impresora":                        1200,
-#   "Aire acondicionado":               2700,
-#   "Bombillas":                        7920,
+#    "Lámpara de cuello de cisne":        672,
+    "Proyector de vídeo":                 32.5,
+    "Electrocardiógrafo":                 17.5,
+    "Nebulizador":                       120,
+    "Unidad dental":                    7200,
+    "Refrigerador":                      576,
+    "Camilla eléctrica":                 720,
+    "Aspirador de secreciones":          220,
+    "Esterilizador":                    6000,
+    "Bomba de infusión":                 200,
+    "Monitor de signos vitales":        1200,
+    "Compresor de aire":                5840,
+    "Ordenador de sobremesa":            720,
+    "Portátil":                          180,
+    "Conexión a Internet":               288,
+    "Impresora":                        1200,
+    "Aire acondicionado":               2700,
+    "Iluminación":                        7920,
 }
 
 ################################################################################
@@ -100,24 +100,24 @@ power_map = {
 DEVICE_GROUPS: dict[str, list[str]] = {
     "Diagnóstico / monitorización clínica": [
         "Ecógrafo",
-#       "Electrocardiógrafo",
-#       "Monitor de signos vitales",
+        "Electrocardiógrafo",
+        "Monitor de signos vitales",
     ],
     "Tratamiento clínico / soporte vital": [
         "Concentrador de oxígeno",
-#       "Nebulizador",
-#       "Bomba de infusión",
-#       "Aspirador de secreciones",
-#       "Camilla eléctrica",
+        "Nebulizador",
+        "Bomba de infusión",
+        "Aspirador de secreciones",
+        "Camilla eléctrica",
     ],
-#   "Odontología": [
-#       "Unidad dental",
-#       "Compresor de aire",
-#   ],
+    "Odontología": [
+        "Unidad dental",
+        "Compresor de aire",
+    ],
     "Cadena de frío / esterilización": [
         "Refrigerador solar para vacunas",
-#       "Refrigerador",
-#       "Esterilizador",
+        "Refrigerador",
+        "Esterilizador",
     ],
     "Cocina / nutrición": [
         "Cocina eléctrica",
@@ -125,18 +125,18 @@ DEVICE_GROUPS: dict[str, list[str]] = {
     ],
     "Iluminación y pequeños equipos": [
         "Lámpara de cuello de cisne",
-#       "Bombillas",
+        "Iluminación",
     ],
-#   "Oficina / informática y formación": [
-#       "Ordenador de sobremesa",
-#       "Portátil",
-#       "Conexión a Internet",
-#       "Impresora",
-#       "Proyector de vídeo",
-#   ],
-#   "Climatización / servicios edificio": [
-#       "Aire acondicionado",
-#   ],
+    "Oficina / informática y formación": [
+        "Ordenador de sobremesa",
+        "Portátil",
+        "Conexión a Internet",
+        "Impresora",
+        "Proyector de vídeo",
+    ],
+    "Climatización / servicios edificio": [
+        "Aire acondicionado",
+    ],
 }
 
 ################################################################################
@@ -253,7 +253,7 @@ DATA_DIR.mkdir(exist_ok=True)
 
 FILES_TO_PUSH: list[Path] = []
 
-# ───────────────────────── Git repo root ─────────────────────────
+# ---------------------------- Git repo root -------------------------------
 try:
     REPO_ROOT = Path(
         git.Repo(
@@ -281,7 +281,7 @@ def load_all_responses():
     """
     records = []
     for p in DATA_DIR.glob("respondent_*.json"):
-        st.write("📄 scanning", p.name)
+#        st.write("📄 scanning", p.name)
         try:
             rec = json.loads(p.read_text())
         except json.JSONDecodeError as err:
@@ -291,7 +291,7 @@ def load_all_responses():
             st.warning(f"⚠️  {p.name} has no 'id' key – skipped.")
             continue
         records.append(rec)
-    st.write(f"✅ loaded {len(records)} respondent file(s) from disk")
+#    st.write(f"✅ loaded {len(records)} respondent file(s) from disk")
     return records
 
 if "survey_meta" not in st.session_state:
@@ -299,8 +299,8 @@ if "survey_meta" not in st.session_state:
 
 meta = st.session_state.survey_meta
 
-st.write("DEBUG – REPO_ROOT =", REPO_ROOT)
-st.write("DEBUG – GH_TOKEN presente =", bool(os.getenv("GH_TOKEN")))
+#st.write("DEBUG – REPO_ROOT =", REPO_ROOT)
+#st.write("DEBUG – GH_TOKEN presente =", bool(os.getenv("GH_TOKEN")))
 
 ##############################################################################
 #  Enrutado automático al arrancar                                           #
@@ -325,7 +325,7 @@ if "survey_data" not in st.session_state:
 
 st.session_state.completed_ids = {rec["id"] for rec in st.session_state.survey_data}
 
-st.write(f"🔍 Loaded respondents on disk: {st.session_state.completed_ids}")
+#st.write(f"🔍 Loaded respondents on disk: {st.session_state.completed_ids}")
     
 if "completed_ids" not in st.session_state:
     st.session_state.completed_ids = { rec["id"] for rec in st.session_state.survey_data }
@@ -656,17 +656,15 @@ def respondent_intro_page():
 
     st.write("**¿Por qué necesitamos profesionales de la salud de España?** Si bien es cierto que en España o en cualquier país desarrollado, esto no es tan necesario, la opinión de los profesionales españoles (occidentales en nuestro caso), nos sirve para comprobar la consistencia y fiabilidad entre los métodos que estamos estudiando.")
 
-    st.write("**¿Por qué necesitamos profesionales de la salud de España?** Si bien es cierto que en España o en cualquier país desarrollado, esto no es tan necesario, la opinión de los profesionales españoles (occidentales en nuestro caso), nos sirve para comprobar la consistencia y fiabilidad entre los métodos que estamos estudiando.")
-
     st.write("Entonces, a modo de resumen :")
     st.write("* **¿Quién puede participar?** Cualquier profesional de la salud.")
     st.write("- **¿Tiempo necesario?** Alrededor de **15 minutos**")
     st.write("- **¿Es anónimo?** Si, es **100% anónimo**")
     st.write("- **¿Hay compensación económica?** **No**, no hay compensación económica.")
-    st.write("- **¿Cual es su Rol?** Su rol será simplemente el de contestar una encuesta que involucra dos métodos para evaluar cómo usted prioriza los aparatos médicos durante apagones, cortes de luz, etc.")
+    st.write("- **¿Cual es su Rol?** Su rol será simplemente el de contestar una encuesta que involucra dos métodos **(Comparación por Pares y Standard Gamble)** para evaluar cómo usted prioriza los aparatos médicos durante apagones, cortes de luz, etc.")
 
     st.markdown(
-        "Cuando esté listo/a, pulsa el botón para comenzar."
+        "Cuando esté listo/a, pulse el botón para comenzar."
     )
 
     if st.button("Comenzar encuesta"):
@@ -703,11 +701,17 @@ def standard_gamble_method():
             3. **<span style='color:#AAAAAA;'>Indiferente</span>**  
                Usted es **indiferente**. Es decir, la probabilidad **P**% le parece un valor apropiado de **importancia** para este dispositivo. 
 
-            ### ¿Qué tiene que hacer entonces usted? 
+            ### Entonces, ¿Qué tiene que hacer usted? 
             * Primero, ver de qué dispositivo se trata.
-            * Segundo, pensar qué tan importante es para usted. 
-            * Tercero, **si** cree que la probabilidad inicial asignada (50% de que funcionará sin problemas- 50% de que no funcionará en ningún caso) **representa lo valioso que es para usted** este aparato, puede clicar en indiferente y avanzar al siguiente. Si, por el contrario, considera que es más importante para usted que funcione fiablemente el aparato en cuestión, debe seleccionar la opción A (para incrementar la probabilidad de que debe funcionar en cualquier caso) tantas veces como crea necesario hasta obtener la probabilidad **P**% deseada. En el caso de que crea que es **menos** importante en su opinión que la probabilidad inicial (es decir, para usted es un aparato más prescindible que otros), debe seleccionar tantas veces como considere la Opción B, hasta que la probabilidad represente la importancia que le asigna usted a este aparato. 
+            * Segundo, pensar **qué tan importante** es para usted. 
+            * Tercero, si cree que la probabilidad inicial asignada (50% de que funcionará sin problemas- 50% de que no funcionará en ningún caso) **representa lo valioso que es para usted** este aparato, puede clicar en indiferente y avanzar al siguiente. Si, por el contrario, considera que es más importante para usted que funcione fiablemente el aparato en cuestión, debe seleccionar la opción A (para incrementar la probabilidad de que debe funcionar en cualquier caso) tantas veces como crea necesario hasta obtener la probabilidad **P**% deseada. En el caso de que crea que es **menos** importante en su opinión que la probabilidad inicial (es decir, para usted es un aparato más prescindible que otros), debe seleccionar tantas veces como considere la Opción B, hasta que la probabilidad represente la importancia que le asigna usted a este aparato. 
             * Cuarto, cuando la **probabilidad P% represente la importancia que usted le asigna al aparato, debe clicar en Indiferente para avanzar al siguiente aparato**.
+
+            ### A modo de resumen: 
+            * Debe fijarse en la probabilidad P% que aparece en el texto de la Opción B.
+            * Si la probabilidad P% **Representa la importancia que usted cree que tiene el dispositivo**, pulse **Indiferente**
+            * Si la probabilidad es **Más Alta** de lo que usted considera, pulse la Opción B para disminuirla.
+            * Si la probabilidad es **Más Baja** de lo que usted considera, pulse la Opción A para aumentarla. 
 
             A continuación veremos una pantalla de Ejemplo, antes de avanzar al primer aparato.
             
@@ -732,7 +736,7 @@ def standard_gamble_method():
         demo_dev = "Dispositivo de ejemplo"
         st.title("Ejemplo de pregunta")
         st.markdown(
-            f"Imagine que el **{demo_dev}** puede recibir energía de forma poco fiable."
+            f"Imagine que el **{demo_dev}** puede recibir energía de forma poco fiable. Usted debe hacer que la Probabilidad represente lo importante que es para usted el dispositivo que estamos evaluando."
         )
         # Reutilizamos la misma UI que en las preguntas reales:
         dummy_res = sg_interactive_core(demo_dev, store_answer=False)
@@ -769,16 +773,19 @@ def standard_gamble_method():
         choice_clicked = None
         with colA:
             st.markdown("### <span style='color:#3CA4FF;'>Opción A</span>", unsafe_allow_html=True)
-            if st.container().button("Potencia parcial", key=f"A_{device_name}"):
+            if st.container().button("Considero que es más importante, quiero **SUBIR** ↑ la probabilidad P% ", key=f"A_{device_name}"):
                 choice_clicked = "Partial"
         with colB:
             st.markdown("### <span style='color:#FF5733;'>Opción B</span>", unsafe_allow_html=True)
-            st.markdown(f"Apuesta: **{p_guess*100:.0f}%** éxito, **{(1-p_guess)*100:.0f}%** fallo")
-            if st.container().button("Apostar", key=f"B_{device_name}"):
+            st.markdown(f"**LOTERÍA:** **{p_guess*100:.0f}%** de probabilidad de que el "
+                f"dispositivo funcione de forma fiable **todo el día**, y "
+                f"**{(1-p_guess)*100:.0f}%** de que **NO funcione** en ningún momento.
+                ")
+            if st.container().button("Considero que es menos importante, quiero **BAJAR** ↓ la probabilidad P%", key=f"B_{device_name}"):
                 choice_clicked = "Lottery"
         with colC:
             st.markdown("### Indiferente", unsafe_allow_html=True)
-            if st.container().button("Me da igual", key=f"C_{device_name}"):
+            if st.container().button("La probabilidad representa la importancia del dispositivo, quiero avanzar al siguiente", key=f"C_{device_name}"):
                 choice_clicked = "Indifferent"
 
         # ── manejo de clic ─────────────────────────────────────
