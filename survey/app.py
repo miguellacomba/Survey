@@ -252,7 +252,8 @@ def scroll_to_top():
         </script>
         """,
         height=1,
-        key=f"scroll_{random.randint(1,1)}"   # clave única → ejecuta siempre
+        scrolling = False
+        key=f"scroll_{random.randint(1,1_000_000)}"   # clave única → ejecuta siempre
     )
 
 
