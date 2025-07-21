@@ -240,6 +240,19 @@ def set_global_font(base_px: int = 18) -> None:
 
 set_global_font(30)
 
+def scroll_to_top():
+    st.markdown(
+        """
+        <script>
+            // Espera a que Streamlit termine de dibujar y sube al principio
+            window.parent.document
+                  .querySelector('section.main')
+                  .scrollTo({top: 0, behavior: 'auto'});
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
+
 ################################################################################
 #  Persistent storage                                                          #
 ################################################################################
@@ -445,6 +458,7 @@ def survey_setup_page():
         meta["finished"] = True
         save_meta(meta)
         st.session_state.page_index = 98   # salto directo a optimización
+        scroll_to_top()
         st.rerun()
         return
 
@@ -462,11 +476,13 @@ def survey_setup_page():
         if needs_opt_setup:
             # salto automático para la persona organizadora
             st.session_state.page_index = 98
+            scroll_to_top()
             st.rerun()
             return
 
         # parámetros ya están → ir directos a analytics
         st.session_state.page_index = 99
+        scroll_to_top()
         st.rerun()
         return
     else:
@@ -474,6 +490,7 @@ def survey_setup_page():
         next_page = 2 if "facility_devices" in meta else 1
         if st.button("Seguir recopilando datos"):
             st.session_state.page_index = next_page
+            scroll_to_top()
             st.rerun()
 
 def device_availability_page():
@@ -509,6 +526,7 @@ def device_availability_page():
 
         st.success("Saved. You won’t be asked again.")
         st.session_state.page_index = 2         # jump to respondent intro
+        scroll_to_top()
         st.rerun()
 
 def optimisation_setup_page():
@@ -543,6 +561,7 @@ def optimisation_setup_page():
 
         st.success("Settings saved.")
         st.session_state.page_index = 99
+        scroll_to_top()
         st.rerun()
 
 def configure_load_contents():
@@ -576,7 +595,8 @@ def configure_load_contents():
     if st.button("Confirm Load Type Devices", disabled=confirm_disabled):
         st.success("All devices assigned – thanks!")
         st.json(st.session_state.assignments)
-        st.session_state.page_index = 4 
+        st.session_state.page_index = 4
+        scroll_to_top()
 
 ################################################################################
 #  Respondent‑level pages                                                      #
@@ -670,6 +690,7 @@ def respondent_intro_page():
     if st.button("Comenzar encuesta"):
         # empezamos por PC
         st.session_state.page_index    = 6
+        scroll_to_top()
         st.rerun()
 
 ###################################### Standard Gamble ##############################################
@@ -933,7 +954,8 @@ def standard_gamble_method():
                 for suffix in ("p_min", "p_max", "p_guess"):
                     st.session_state.pop(f"{dev}_{suffix}", None)
 #            st.session_state.page_index = 6   # saltar al método PC
-            finish_current_respondent()   
+            finish_current_respondent()
+            scroll_to_top()
             st.rerun()
             return
 
@@ -1125,6 +1147,7 @@ def pairwise_method():                                     #We start the method
                 # al terminar PC pasamos a SG
                 st.session_state.page_index_pc = 0
                 st.session_state.page_index    = 5      # Standard Gamble
+                scroll_to_top()
                 st.rerun()
                 return
         else:
@@ -1328,6 +1351,7 @@ def finish_current_respondent():
 
     st.session_state.this_respondent_id = None
     st.session_state.page_index = 120
+    scroll_to_top()
     st.rerun()   
 
 ################################################################################
@@ -1467,6 +1491,7 @@ def analytics_page():
     
             if st.button("Keep on gathering data"):
                 st.session_state.page_index = 2
+                scroll_to_top()
                 st.rerun()
             return 
     
@@ -1980,6 +2005,7 @@ def analytics_page():
     
         if st.button("Change optimisation parameters"):
             st.session_state.page_index = 98
+            scroll_to_top()
             st.stop()
 
 ################################################################################
