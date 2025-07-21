@@ -24,6 +24,7 @@ import altair as alt
 import git
 import os
 import subprocess
+import streamlit.components.v1 as components
 
 from datetime import datetime
 from collections import defaultdict
@@ -241,17 +242,17 @@ def set_global_font(base_px: int = 18) -> None:
 set_global_font(30)
 
 def scroll_to_top():
-    st.markdown(
-        """
-        <script>
-            // Espera a que Streamlit termine de dibujar y sube al principio
-            window.parent.document
-                  .querySelector('section.main')
-                  .scrollTo({top: 0, behavior: 'auto'});
-        </script>
-        """,
-        unsafe_allow_html=True
+    components.html(
+    """
+    <script>
+        // Ejecuta justo después de montar el componente
+        window.scrollTo(0, 0);
+    </script>
+    """,
+    height=0,           # no ocupa espacio visible
+    scrolling=False
     )
+
 
 ################################################################################
 #  Persistent storage                                                          #
