@@ -243,17 +243,18 @@ def set_global_font(base_px: int = 18) -> None:
 set_global_font(30)
 
 def scroll_to_top():
-    """Fuerza al contenedor principal de Streamlit a desplazarse al inicio."""
-    components.html(
+    """Fuerza la página al principio del visor principal."""
+    st.markdown(
         """
         <script>
-        const mainSect = window.parent.document.querySelector('section.main');
-        if (mainSect){ mainSect.scrollTo(0, 0); }
+        const main = window.parent.document.querySelector('section.main');
+        if (main){ main.scrollTo({top: 0, left: 0, behavior: 'auto'}); }
         </script>
         """,
-        height=1,
-        scrolling = False,
-        key=f"scroll_{random.randint(1,1_000_000)}"   # clave única → ejecuta siempre
+        unsafe_allow_html=True,
+        # el truco es que Streamlit vuelva a “dibujar” este bloque  
+        # en cada rerun → key diferente siempre
+        key=f"scroll_{random.randint(0, 1_000_000)}"
     )
 
 
