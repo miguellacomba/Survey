@@ -3,22 +3,54 @@
   "Methods": {
     "SG": {
       "utility": {
-        "Cocina el\u00e9ctrica": 49.609375,
-        "Refrigerador solar para vacunas": 93.75,
-        "Ec\u00f3grafo": 50.0,
-        "Concentrador de ox\u00edgeno": 50.0,
+        "Cocina el\u00e9ctrica": 62.5,
+        "Refrigerador solar para vacunas": 81.25,
+        "Ec\u00f3grafo": 18.75,
+        "Concentrador de ox\u00edgeno": 62.5,
         "Ollas el\u00e9ctricas": 25.0,
-        "L\u00e1mpara de cuello de cisne": 6.25
+        "Proyector de v\u00eddeo": 12.5,
+        "Electrocardi\u00f3grafo": 93.75,
+        "Nebulizador": 34.375,
+        "Unidad dental": 65.625,
+        "Refrigerador": 81.25,
+        "Camilla el\u00e9ctrica": 21.875,
+        "Aspirador de secreciones": 22.65625,
+        "Esterilizador": 25.0,
+        "Bomba de infusi\u00f3n": 12.5,
+        "Monitor de signos vitales": 6.25,
+        "Compresor de aire": 3.125,
+        "Ordenador de sobremesa": 96.875,
+        "Port\u00e1til": 66.015625,
+        "Conexi\u00f3n a Internet": 9.375,
+        "Impresora": 92.1875,
+        "Aire acondicionado": 34.86328125,
+        "Iluminaci\u00f3n": 50.0
       }
     },
     "PC": {
       "utility": {
-        "Ollas el\u00e9ctricas": 100.0,
-        "Ec\u00f3grafo": 80.02000000000001,
-        "Cocina el\u00e9ctrica": 60.04,
-        "Refrigerador solar para vacunas": 40.06000000000001,
-        "Concentrador de ox\u00edgeno": 20.080000000000005,
-        "L\u00e1mpara de cuello de cisne": 0.1
+        "Esterilizador": 100.0,
+        "Ordenador de sobremesa": 95.24285714285713,
+        "Ec\u00f3grafo": 90.48571428571428,
+        "Aire acondicionado": 85.72857142857143,
+        "Nebulizador": 80.97142857142858,
+        "Refrigerador": 76.21428571428571,
+        "Monitor de signos vitales": 71.45714285714286,
+        "Cocina el\u00e9ctrica": 66.69999999999999,
+        "Port\u00e1til": 61.94285714285715,
+        "Ollas el\u00e9ctricas": 57.18571428571429,
+        "Iluminaci\u00f3n": 52.42857142857144,
+        "Aspirador de secreciones": 47.67142857142857,
+        "Refrigerador solar para vacunas": 42.91428571428572,
+        "Conexi\u00f3n a Internet": 38.15714285714286,
+        "Proyector de v\u00eddeo": 33.4,
+        "Bomba de infusi\u00f3n": 28.642857142857146,
+        "Concentrador de ox\u00edgeno": 23.885714285714286,
+        "Compresor de aire": 19.12857142857143,
+        "Electrocardi\u00f3grafo": 14.371428571428572,
+        "Impresora": 9.614285714285714,
+        "Unidad dental": 4.857142857142857,
+        "Camilla el\u00e9ctrica": 0.1
       }
     }
   }
