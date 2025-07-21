@@ -652,7 +652,7 @@ def respondent_intro_page():
 
     st.write("**¿Cómo?** Se ha diseñado una herramienta para ayudar al sistema a distribuir la energía hacia los aparatos considerados como más importantes en situaciones donde la energía escasea.")
 
-    st.write("**¿No se ha hecho antes?** La respuesta es que sí, sí que se han estudios previos para establecer cuales son las cargas críticas en centros de salud, PERO, nunca considerando la opinión de doctores, enfermeras, y cualquier otro trabajador de un centro de salud con conocimientos médicos; sino que siempre ha sido considerando la opinión de los pacientes para ello. ")
+    st.write("**¿No se ha hecho antes?** La respuesta es que sí, sí que se han hecho estudios previos para establecer cuales son las cargas críticas en centros de salud, PERO nunca considerando la opinión de doctores, enfermeras, y cualquier otro trabajador de un centro de salud con conocimientos médicos; siempre ha sido considerando la opinión de los pacientes. ")
 
     st.write("**¿Por qué necesitamos profesionales de la salud de España?** Si bien es cierto que en España o en cualquier país desarrollado, esto no es tan necesario, la opinión de los profesionales españoles (occidentales en nuestro caso), nos sirve para comprobar la consistencia y fiabilidad entre los métodos que estamos estudiando.")
 
@@ -866,7 +866,7 @@ def standard_gamble_method():
                 f"El **{device_name}** funciona **A VECES**: por ejemplo, "
                 "funciona la primera vez que lo necesita pero falla la siguiente"
             )
-            if st.container().button("Elegir A", key=f"A_{index}",
+            if st.container().button("Quiero **SUBIR** ↑ la probabilidad P% ", key=f"A_{index}",
                                      help="Funciona a veces"):
                 choice_clicked = "Partial"
 
@@ -879,7 +879,7 @@ def standard_gamble_method():
                 f"dispositivo funcione de forma fiable **todo el día**, y "
                 f"**{(1-p_guess)*100:.0f}%** de que **NO funcione**."
             )
-            if st.container().button("Elegir B", key=f"B_{index}",
+            if st.container().button("Quiero **BAJAR** ↓ la probabilidad P%", key=f"B_{index}",
                                      help="Lotería"):
                 choice_clicked = "Lottery"
 
@@ -1051,14 +1051,14 @@ def pairwise_method():                                     #We start the method
 
             ### 🌩️ Contexto
             * El centro no puede alimentar todos los dispositivos a la vez.
-            * Tu tarea es escoger el que debería recibir electricidad **ahora mismo**.
+            * Su tarea es escoger el que debería recibir electricidad **ahora mismo**.
 
             ### 🔑 Puntos clave a recordar
             * **Si se elige el Dispositivo A ⇒ el Dispositivo B permanece apagado**
               (y viceversa).  
             * Existen *muchos* pares, pero la lógica inteligente omite
               comparaciones que ya podemos deducir.
-            * Responde con **coherencia** – no hay límite de tiempo.
+            * Responda con **coherencia** – no hay límite de tiempo.
 
             ---
             """,
