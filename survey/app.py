@@ -251,8 +251,7 @@ def scroll_to_top():
         if (mainSect){ mainSect.scrollTo(0, 0); }
         </script>
         """,
-        height=0,
-        width=0,
+        height=1,
         key=f"scroll_{random.randint(0, 1_000_000)}"   # clave única → ejecuta siempre
     )
 
