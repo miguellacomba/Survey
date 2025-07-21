@@ -424,6 +424,7 @@ def filter_and_rescale_for_optim(util_series, avail_set, renorm=True):
 def survey_setup_page():
     # refrescar contadores cada vez que se abre el menú de organización
     st.session_state.survey_data = load_all_responses()
+    scroll_to_top()
     st.session_state.completed_ids = {
         r["id"] for r in st.session_state.survey_data
     }
@@ -645,6 +646,7 @@ def respondent_intro_page():
     Muestra su identificador asignado automáticamente y un botón para comenzar.
     NO pide nada al usuario.
     """
+    scroll_to_top()
     # ── si todavía no se ha generado un ID para esta sesión ─────────────────
     if st.session_state.this_respondent_id is None:
         new_id = next_auto_id()
