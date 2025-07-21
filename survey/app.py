@@ -242,19 +242,20 @@ def set_global_font(base_px: int = 18) -> None:
 
 set_global_font(30)
 
-def scroll_to_top():
-    """Fuerza la página al principio del visor principal."""
+def scroll_to_top() -> None:
+    """Coloca el scroll de la app arriba del todo cada vez que se ejecuta."""
+    rand = random.randint(0, 1_000_000)      # fuerza re-render
     st.markdown(
-        """
+        f"""
         <script>
         const main = window.parent.document.querySelector('section.main');
-        if (main){ main.scrollTo({top: 0, left: 0, behavior: 'auto'}); }
+        if (main) {{
+            main.scrollTo({{ top: 0, left: 0, behavior: 'auto' }});
+        }}
         </script>
+        <!-- scroll-hack {rand} -->
         """,
-        unsafe_allow_html=True,
-        # el truco es que Streamlit vuelva a “dibujar” este bloque  
-        # en cada rerun → key diferente siempre
-        key=f"scroll_{random.randint(0, 1_000_000)}"
+        unsafe_allow_html=True
     )
 
 
