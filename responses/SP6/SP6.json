@@ -1,0 +1,57 @@
+{
+  "id": "SP6",
+  "Methods": {
+    "SG": {
+      "utility": {
+        "Cocina el\u00e9ctrica": 25.0,
+        "Refrigerador solar para vacunas": 75.0,
+        "Ec\u00f3grafo": 87.5,
+        "Concentrador de ox\u00edgeno": 99.951171875,
+        "Ollas el\u00e9ctricas": 3.125,
+        "Proyector de v\u00eddeo": 0.390625,
+        "Electrocardi\u00f3grafo": 93.75,
+        "Nebulizador": 93.75,
+        "Unidad dental": 0.78125,
+        "Refrigerador": 50.0,
+        "Camilla el\u00e9ctrica": 12.5,
+        "Aspirador de secreciones": 99.8046875,
+        "Esterilizador": 75.0,
+        "Bomba de infusi\u00f3n": 87.5,
+        "Monitor de signos vitales": 99.90234375,
+        "Compresor de aire": 24.99997615814209,
+        "Ordenador de sobremesa": 75.0,
+        "Port\u00e1til": 50.0,
+        "Conexi\u00f3n a Internet": 87.5,
+        "Impresora": 50.0,
+        "Aire acondicionado": 75.0,
+        "Iluminaci\u00f3n": 99.90234375
+      }
+    },
+    "PC": {
+      "utility": {
+        "Concentrador de ox\u00edgeno": 100.0,
+        "Aspirador de secreciones": 95.24285714285713,
+        "Iluminaci\u00f3n": 90.48571428571428,
+        "Electrocardi\u00f3grafo": 85.72857142857143,
+        "Monitor de signos vitales": 80.97142857142858,
+        "Nebulizador": 76.21428571428571,
+        "Bomba de infusi\u00f3n": 71.45714285714286,
+        "Ordenador de sobremesa": 66.69999999999999,
+        "Refrigerador solar para vacunas": 61.94285714285715,
+        "Ec\u00f3grafo": 57.18571428571429,
+        "Esterilizador": 52.42857142857144,
+        "Refrigerador": 47.67142857142857,
+        "Aire acondicionado": 42.91428571428572,
+        "Compresor de aire": 38.15714285714286,
+        "Cocina el\u00e9ctrica": 33.4,
+        "Conexi\u00f3n a Internet": 28.642857142857146,
+        "Port\u00e1til": 23.885714285714286,
+        "Ollas el\u00e9ctricas": 19.12857142857143,
+        "Impresora": 14.371428571428572,
+        "Camilla el\u00e9ctrica": 9.614285714285714,
+        "Proyector de v\u00eddeo": 4.857142857142857,
+        "Unidad dental": 0.1
+      }
+    }
+  }
+}
