@@ -1,0 +1,57 @@
+{
+  "id": "SP7",
+  "Methods": {
+    "SG": {
+      "utility": {
+        "Cocina el\u00e9ctrica": 50.0,
+        "Refrigerador solar para vacunas": 75.0,
+        "Ec\u00f3grafo": 87.5,
+        "Concentrador de ox\u00edgeno": 87.5,
+        "Ollas el\u00e9ctricas": 50.0,
+        "Proyector de v\u00eddeo": 0.390625,
+        "Electrocardi\u00f3grafo": 93.75,
+        "Nebulizador": 62.5,
+        "Unidad dental": 25.0,
+        "Refrigerador": 62.5,
+        "Camilla el\u00e9ctrica": 18.75,
+        "Aspirador de secreciones": 92.1875,
+        "Esterilizador": 93.75,
+        "Bomba de infusi\u00f3n": 96.875,
+        "Monitor de signos vitales": 98.4375,
+        "Compresor de aire": 75.0,
+        "Ordenador de sobremesa": 12.5,
+        "Port\u00e1til": 6.25,
+        "Conexi\u00f3n a Internet": 3.125,
+        "Impresora": 1.5625,
+        "Aire acondicionado": 50.0,
+        "Iluminaci\u00f3n": 50.0
+      }
+    },
+    "PC": {
+      "utility": {
+        "Monitor de signos vitales": 100.0,
+        "Bomba de infusi\u00f3n": 95.24285714285713,
+        "Esterilizador": 90.48571428571428,
+        "Aspirador de secreciones": 85.72857142857143,
+        "Electrocardi\u00f3grafo": 80.97142857142858,
+        "Ec\u00f3grafo": 76.21428571428571,
+        "Compresor de aire": 71.45714285714286,
+        "Concentrador de ox\u00edgeno": 66.69999999999999,
+        "Refrigerador": 61.94285714285715,
+        "Iluminaci\u00f3n": 57.18571428571429,
+        "Refrigerador solar para vacunas": 52.42857142857144,
+        "Nebulizador": 47.67142857142857,
+        "Ollas el\u00e9ctricas": 42.91428571428572,
+        "Aire acondicionado": 38.15714285714286,
+        "Cocina el\u00e9ctrica": 33.4,
+        "Unidad dental": 28.642857142857146,
+        "Camilla el\u00e9ctrica": 23.885714285714286,
+        "Ordenador de sobremesa": 19.12857142857143,
+        "Port\u00e1til": 14.371428571428572,
+        "Conexi\u00f3n a Internet": 9.614285714285714,
+        "Impresora": 4.857142857142857,
+        "Proyector de v\u00eddeo": 0.1
+      }
+    }
+  }
+}
