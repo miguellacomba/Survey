@@ -3,13 +3,13 @@
   "Methods": {
     "SG": {
       "utility": {
-        "Cocina el\u00e9ctrica": 6.25,
+        "Cocina el\u00e9ctrica": 6.4971923828125,
         "Refrigerador solar para vacunas": 12.5,
         "Ec\u00f3grafo": 87.5,
         "Concentrador de ox\u00edgeno": 75.0,
         "Ollas el\u00e9ctricas": 6.25,
-        "Proyector de v\u00eddeo": 0.390625,
-        "Electrocardi\u00f3grafo": 75.0,
+        "Proyector de v\u00eddeo": 0.48828125,
+        "Electrocardi\u00f3grafo": 75.78125,
         "Nebulizador": 25.0,
         "Unidad dental": 6.25,
         "Refrigerador": 25.0,
@@ -20,7 +20,7 @@
         "Monitor de signos vitales": 75.0,
         "Compresor de aire": 12.5,
         "Ordenador de sobremesa": 1.5625,
-        "Port\u00e1til": 1.5625,
+        "Port\u00e1til": 0.78125,
         "Conexi\u00f3n a Internet": 12.5,
         "Impresora": 0.390625,
         "Aire acondicionado": 3.125,
