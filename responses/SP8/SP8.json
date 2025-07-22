@@ -1,0 +1,57 @@
+{
+  "id": "SP8",
+  "Methods": {
+    "SG": {
+      "utility": {
+        "Cocina el\u00e9ctrica": 25.0,
+        "Refrigerador solar para vacunas": 75.0,
+        "Ec\u00f3grafo": 75.0,
+        "Concentrador de ox\u00edgeno": 75.0,
+        "Ollas el\u00e9ctricas": 25.0,
+        "Proyector de v\u00eddeo": 12.5,
+        "Electrocardi\u00f3grafo": 50.0,
+        "Nebulizador": 50.0,
+        "Unidad dental": 25.0,
+        "Refrigerador": 50.0,
+        "Camilla el\u00e9ctrica": 25.0,
+        "Aspirador de secreciones": 50.0,
+        "Esterilizador": 50.0,
+        "Bomba de infusi\u00f3n": 50.0,
+        "Monitor de signos vitales": 75.0,
+        "Compresor de aire": 75.0,
+        "Ordenador de sobremesa": 75.0,
+        "Port\u00e1til": 25.0,
+        "Conexi\u00f3n a Internet": 75.0,
+        "Impresora": 25.0,
+        "Aire acondicionado": 50.0,
+        "Iluminaci\u00f3n": 50.0
+      }
+    },
+    "PC": {
+      "utility": {
+        "Monitor de signos vitales": 100.0,
+        "Concentrador de ox\u00edgeno": 95.24285714285713,
+        "Electrocardi\u00f3grafo": 90.48571428571428,
+        "Compresor de aire": 85.72857142857143,
+        "Esterilizador": 80.97142857142858,
+        "Refrigerador solar para vacunas": 76.21428571428571,
+        "Ec\u00f3grafo": 71.45714285714286,
+        "Refrigerador": 66.69999999999999,
+        "Aspirador de secreciones": 61.94285714285715,
+        "Nebulizador": 57.18571428571429,
+        "Conexi\u00f3n a Internet": 52.42857142857144,
+        "Bomba de infusi\u00f3n": 47.67142857142857,
+        "Ordenador de sobremesa": 42.91428571428572,
+        "Aire acondicionado": 38.15714285714286,
+        "Cocina el\u00e9ctrica": 33.4,
+        "Unidad dental": 28.642857142857146,
+        "Ollas el\u00e9ctricas": 23.885714285714286,
+        "Camilla el\u00e9ctrica": 19.12857142857143,
+        "Port\u00e1til": 14.371428571428572,
+        "Impresora": 9.614285714285714,
+        "Iluminaci\u00f3n": 4.857142857142857,
+        "Proyector de v\u00eddeo": 0.1
+      }
+    }
+  }
+}
