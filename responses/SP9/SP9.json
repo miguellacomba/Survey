@@ -1,0 +1,57 @@
+{
+  "id": "SP9",
+  "Methods": {
+    "SG": {
+      "utility": {
+        "Cocina el\u00e9ctrica": 50.0,
+        "Refrigerador solar para vacunas": 50.0,
+        "Ec\u00f3grafo": 50.0,
+        "Concentrador de ox\u00edgeno": 50.0,
+        "Ollas el\u00e9ctricas": 50.0,
+        "Proyector de v\u00eddeo": 50.0,
+        "Electrocardi\u00f3grafo": 50.0,
+        "Nebulizador": 50.0,
+        "Unidad dental": 50.0,
+        "Refrigerador": 50.0,
+        "Camilla el\u00e9ctrica": 50.0,
+        "Aspirador de secreciones": 50.0,
+        "Esterilizador": 50.0,
+        "Bomba de infusi\u00f3n": 50.0,
+        "Monitor de signos vitales": 50.0,
+        "Compresor de aire": 50.0,
+        "Ordenador de sobremesa": 50.0,
+        "Port\u00e1til": 50.0,
+        "Conexi\u00f3n a Internet": 50.0,
+        "Impresora": 50.0,
+        "Aire acondicionado": 50.0,
+        "Iluminaci\u00f3n": 50.0
+      }
+    },
+    "PC": {
+      "utility": {
+        "Ec\u00f3grafo": 100.0,
+        "Conexi\u00f3n a Internet": 95.24285714285713,
+        "Monitor de signos vitales": 90.48571428571428,
+        "Compresor de aire": 85.72857142857143,
+        "Bomba de infusi\u00f3n": 80.97142857142858,
+        "Ordenador de sobremesa": 76.21428571428571,
+        "Concentrador de ox\u00edgeno": 71.45714285714286,
+        "Refrigerador": 66.69999999999999,
+        "Unidad dental": 61.94285714285715,
+        "Electrocardi\u00f3grafo": 57.18571428571429,
+        "Esterilizador": 52.42857142857144,
+        "Nebulizador": 47.67142857142857,
+        "Aspirador de secreciones": 42.91428571428572,
+        "Refrigerador solar para vacunas": 38.15714285714286,
+        "Port\u00e1til": 33.4,
+        "Iluminaci\u00f3n": 28.642857142857146,
+        "Cocina el\u00e9ctrica": 23.885714285714286,
+        "Camilla el\u00e9ctrica": 19.12857142857143,
+        "Proyector de v\u00eddeo": 14.371428571428572,
+        "Ollas el\u00e9ctricas": 9.614285714285714,
+        "Aire acondicionado": 4.857142857142857,
+        "Impresora": 0.1
+      }
+    }
+  }
+}
